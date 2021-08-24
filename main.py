@@ -1,45 +1,28 @@
-# Plan:
+import numpy as np
 
-import tensorflow as tf
-import tensorflow_probability as tfp
+from pymoo.algorithms.nsga2 import NSGA2
+from pymoo.optimize import minimize
 
-from blueprint import DenseLayer, Blueprint
+import evolution
 
-n_epochs = 10
-mnist_dataset = tf.keras.datasets.mnist.load_data()
-(train_images, train_labels), (test_images, test_labels) = mnist_dataset
-train_images, test_images = train_images / 255.0, test_images / 255.0
+def main():
+    layers = 5
+    max_connections = int((layers-1)*layers/2) # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1]
+
+    xl = np.zeros(max_connections)
+    xu = np.ones(max_connections)
+
+    problem = evolution.EVProblem(n_var=max_connections, n_obj=1, n_constr=0, xl=xl, xu=xu, layers=layers)
+
+    _pop_size = 10
+    algorithm = NSGA2(pop_size=_pop_size, 
+                        n_offsprings=_pop_size, 
+                        sampling=evolution.MySampling(),
+                        mutation=evolution.MyMutation(),
+                        eliminate_duplicates=True)
+
+    res = minimize(problem, algorithm, callback=evolution.do_every_generations, termination=('n_gen', 10))
 
 
-import time
-start_time = time.time()
-
-### Normal
-blueprint_graph = [[1], [0, 1], [1, 1, 1]]
-input_shape = (28, 28, 1)
-layerType = DenseLayer
-blueprint_object = Blueprint(blueprint_graph, input_shape, layerType)
-
-model = blueprint_object.get_model()
-
-model.fit(x=train_images,
-            y=train_labels,
-            epochs=n_epochs,
-            use_multiprocessing=True,
-            batch_size=64)
-
-print('Execution Time: %s' % (time.time()-start_time))
-
-model.summary()
-
-### TFP
-# model_tfp = get_model((28, 28, 1), dtype=dtype, layerType=DenseFlipout)
-
-# model_tfp.compile(optimizer=tf.keras.optimizers.Adam(learning_rate), loss='categorical_crossentropy')
-# model_tfp.fit(x=train_images,
-#             y=train_labels,
-#             epochs=10,
-#             use_multiprocessing=True,
-#             batch_size=64)
-
-# model_tfp.summary()
+if __name__ == "__main__":
+    main()

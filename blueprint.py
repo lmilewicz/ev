@@ -48,17 +48,29 @@ class DenseFlipout(Node):
                                     dtype=self.dtype)
 
 class Blueprint():
-    def __init__(self, blueprint_graph, input_shape, layerType):
-        self.blueprint_graph = blueprint_graph
+    def __init__(self, genome, layers, input_shape, layerType) -> tf.keras.Model:
         self.model = None
         self.input_shape = input_shape
         self.dtype = tf.float32
         self.layerType = layerType
+        self.layers = layers
+
+        self.blueprint_graph = self.blueprint_convert(layers, genome)
 
         self.process_graph()
 
         learning_rate = 0.01
         self.model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
+
+    def blueprint_convert(self, layersNumber, x):
+        blueprint_graph = []
+        start = end = 0
+        for i in range(layersNumber-1):
+            start = end
+            end = start+i+1
+            blueprint_graph.append(x[start:end])
+
+        return blueprint_graph
 
     def process_graph(self):
             input = tf.keras.Input(shape=self.input_shape, dtype=self.dtype)
@@ -71,15 +83,17 @@ class Blueprint():
             layers[0] = layer
 
             for idx, gene in enumerate(self.blueprint_graph, 1):
-                if np.count_nonzero(gene) > 0:
+                if np.count_nonzero(gene) == 0:
+                    layer = layers[0]
+                else:
                     if np.count_nonzero(gene) > 1:
                         nonzero_genes = [layers[i] for i in np.nonzero(gene)[0]]
                         layer = tf.keras.layers.concatenate(nonzero_genes)
                     else:
                         layer = layers[np.nonzero(gene)[0][0]]
-                    layerClass = self.layerType()
-                    layer = layerClass.create_node()(layer)
-                    layers[idx] = layer
+                layerClass = self.layerType()
+                layer = layerClass.create_node()(layer)
+                layers[idx] = layer
 
             # output_layers = [#{'class_name': 'Flatten', 'config': {}},
             #                 {'class_name': 'Dense', 'config': {'units': 10, 'activation': 'softmax'}}]
