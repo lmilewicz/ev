@@ -36,8 +36,7 @@ class EVProblem(Problem):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
 
         for i in range(x.shape[0]):
-            blueprint_object = Blueprint(genome = x, 
-                                            config = self.config)
+            blueprint_object = Blueprint(genome=x, config=self.config, dataset_size = len(self.train_images))
             model = blueprint_object.get_model()
             
             model.fit(x=self.train_images,
@@ -53,21 +52,31 @@ class EVProblem(Problem):
 
         out["F"] = objs
 
-class MySampling(Sampling):
+
+class SamplingAll(Sampling):
     def __init__(self) -> None:
         super().__init__()
         
     def _do(self, problem, n_samples, **kwargs):
         val = np.random.random((n_samples, problem.n_var))
-        return (val < 0.5).astype(np.int)
+        return (val > 0.5).astype(np.int)
+
+class SamplingFromSmall(Sampling):
+    def __init__(self) -> None:
+        super().__init__()
+        
+    def _do(self, problem, n_samples, **kwargs):
+        val = np.zeros((n_samples, problem.n_var))
+        val[:,0] = np.random.random(n_samples)
+        return (val > 0.5).astype(np.int)
 
 
-class MyMutation(Mutation):
 
+class MutationAll(Mutation):
     def __init__(self, prob=None):
         super().__init__()
         self.prob = prob
-
+    
     def _do(self, problem, X, **kwargs):
         if self.prob is None:
             self.prob = 1.0 / problem.n_var
@@ -81,5 +90,40 @@ class MyMutation(Mutation):
         _X[flip] = np.logical_not(X[flip])
         _X[no_flip] = X[no_flip]
 
-        return _X.astype(np.int)
+        return _X
+
+class MutationFromSmall(Mutation):
+    def __init__(self, prob=None):
+        super().__init__()
+        self.prob = prob
+
+    def _do(self, problem, X, **kwargs):
+        if self.prob is None:
+            self.prob = 1.0 / problem.n_var
+        
+        _X = np.full(X.shape, 0)
+
+        for j in range(X.shape[0]):
+            break_loop = start = end = 0
+            for i in range(problem.max_layers-1):
+                start = end
+                end = start+i+1
+                X_layer = X[j, start:end].copy()
+                _X_layer = X[j, start:end].copy()
+                if(np.sum(X_layer))==0:
+                    _X_layer[end-start-1] = (1 if np.random.random() > self.prob else 0)
+                    break_loop = 1
+                else:
+                    M = np.random.random(X_layer.shape)
+                    flip, no_flip = M < self.prob, M >= self.prob
+                    _X_layer[flip] = np.logical_not(X_layer[flip]).astype(np.int)
+                    _X_layer[no_flip] = X_layer[no_flip].astype(np.int)
+                    if(np.sum(X_layer)==0):
+                        break_loop=1
+                        _X[j, end:X.shape[1]] = np.zeros(X.shape[1]-end)
+                _X[j, start:end] = _X_layer
+
+                if(break_loop): break
+
+        return _X
 
