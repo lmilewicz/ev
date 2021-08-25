@@ -1,13 +1,13 @@
 import numpy as np
+import tensorflow as tf
 
 from pymoo.model.problem import Problem
 from pymoo.model.sampling import Sampling
 from pymoo.operators.mutation.polynomial_mutation import PolynomialMutation
 from pymoo.model.mutation import Mutation
 
-import tensorflow as tf
-
-from blueprint import Blueprint, DenseLayer
+from blueprint import Blueprint
+from data_loader import DataLoader
 
 def do_every_generations(algorithm):
     gen = algorithm.n_gen
@@ -19,33 +19,35 @@ def do_every_generations(algorithm):
                                                   np.median(pop_obj[:, 0]), np.max(pop_obj[:, 0])))
     
 class EVProblem(Problem):
-    def __init__(self, n_var, n_obj, n_constr, xl, xu, layers):
-        super().__init__(n_var=n_var, n_obj=n_obj, n_constr=n_constr, type_var=np.int)
-        self.xl = xl
-        self.xu = xu
-        self.layers = layers
+    def __init__(self, config):
+        max_connections = int((config.max_layers-1)*config.max_layers/2) 
+        # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
+
+        super().__init__(n_var=max_connections, n_obj=config.n_obj, n_constr=config.n_constr, type_var=np.int)
+
+        self.config = config
+        self.max_layers = config.max_layers
+        self.xl = np.zeros(max_connections)
+        self.xu = np.ones(max_connections)
+
+        (self.train_images, self.train_labels), (self.test_images, self.test_labels) = DataLoader(config.dataset)
 
     def _evaluate(self, x, out, *args, **kwargs):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
 
-        n_epochs = 5
-        _batch_size = 512
-        mnist_dataset = tf.keras.datasets.mnist.load_data()
-        (train_images, train_labels), (test_images, test_labels) = mnist_dataset
-        train_images, test_images = train_images / 255.0, test_images / 255.0
-
         for i in range(x.shape[0]):
-            blueprint_object = Blueprint(genome = x, layers = self.layers, input_shape = (28, 28, 1), layerType = DenseLayer)
+            blueprint_object = Blueprint(genome = x, 
+                                            config = self.config)
             model = blueprint_object.get_model()
             
-            model.fit(x=train_images,
-                        y=train_labels,
-                        epochs=n_epochs,
+            model.fit(x=self.train_images,
+                        y=self.train_labels,
+                        epochs=self.config.n_epochs,
                         use_multiprocessing=True,
-                        batch_size=_batch_size,
+                        batch_size=self.config.batch_size,
                         verbose=0)
 
-            performance = model.evaluate(test_images, test_labels, verbose=0)
+            performance = model.evaluate(self.test_images, self.test_labels, verbose=0)
 
             objs[i, 0] = 1 - performance
 

@@ -1,27 +1,50 @@
+# To disable Tensorflow warnings:
+# 0 = all messages are logged (default behavior)
+# 1 = INFO messages are not printed
+# 2 = INFO and WARNING messages are not printed
+# 3 = INFO, WARNING, and ERROR messages are not printed
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
+
 import numpy as np
 
 from pymoo.algorithms.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
+from blueprint import DenseLayer
 import evolution
 
+### CONFIG:::
+class Config():
+    def __init__(self):
+        self.max_layers = 5
+        self.pop_size = 10
+        self.n_obj = 1
+        self.n_constr = 0
+        self.termination = ('n_gen', 10)
+        self.dataset = 'MNIST'
+        self.input_shape = (28, 28, 1)
+        self.n_epochs = 5
+        self.batch_size = 512
+        self.layerType = DenseLayer
+        self.learning_rate = 0.01
+        self.units = 10
+        self.activation = 'ReLU'
+        self.out_units = 10
+        self.out_activation = 'softmax'
+
+
+config = Config()
+
 def main():
-    layers = 5
-    max_connections = int((layers-1)*layers/2) # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1]
+    problem = evolution.EVProblem(config)
 
-    xl = np.zeros(max_connections)
-    xu = np.ones(max_connections)
-
-    problem = evolution.EVProblem(n_var=max_connections, n_obj=1, n_constr=0, xl=xl, xu=xu, layers=layers)
-
-    _pop_size = 10
-    algorithm = NSGA2(pop_size=_pop_size, 
-                        n_offsprings=_pop_size, 
+    algorithm = NSGA2(pop_size=config.pop_size,
                         sampling=evolution.MySampling(),
                         mutation=evolution.MyMutation(),
                         eliminate_duplicates=True)
 
-    res = minimize(problem, algorithm, callback=evolution.do_every_generations, termination=('n_gen', 10))
+    res = minimize(problem, algorithm, callback=evolution.do_every_generations, termination=config.termination)
 
 
 if __name__ == "__main__":
