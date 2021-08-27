@@ -3,12 +3,11 @@ import tensorflow as tf
 
 from pymoo.model.problem import Problem
 from pymoo.model.sampling import Sampling
-# from pymoo.operators.mutation.polynomial_mutation import PolynomialMutation
 from pymoo.model.mutation import Mutation
 
 from blueprint import Blueprint
 from data_loader import DataLoader
-from misc import remove_disconected_layers
+from misc import remove_disconnected_layers
 
 def do_every_generations(algorithm):
     gen = algorithm.n_gen
@@ -48,8 +47,6 @@ class EVProblem(Problem):
                         verbose=0)
 
             performance = model.evaluate(self.test_images, self.test_labels, verbose=0)
-            print(blueprint_object.blueprint_graph)
-            print(performance)
             objs[i, 0] = 1 - performance
 
         out["F"] = objs

@@ -11,30 +11,9 @@ class Blueprint():
         self.dtype = tf.float32
 
         self.blueprint_graph = blueprint_convert(genome, layers_indexes=config.layers_indexes)
-        # self.blueprint_graph = self.remove_disconected_layers()
-
         self.process_graph()
 
         self.model.compile(optimizer=tf.keras.optimizers.Adam(config.learning_rate), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
-
-
-    # def remove_disconected_layers(self):
-    #     layers = np.zeros(self.config.max_layers)
-    #     layers[0] = 1
-    #     blueprint_graph = []
-    #     for idx, gene in enumerate(self.blueprint_graph, start=1):
-    #         layer = 0
-    #         gene_copy = gene.copy()
-    #         if np.count_nonzero(gene) > 0:
-    #             # print(np.nonzero(gene))
-    #             for i in np.nonzero(gene)[0]:
-    #                 if(layers[i] == 0): 
-    #                     gene_copy[i] = 0
-    #                 else:
-    #                     layer = 1
-    #         layers[idx] = layer
-    #         blueprint_graph.append(gene_copy)        
-    #     return blueprint_graph
         
     def process_graph(self):
             tf.keras.backend.clear_session()
@@ -63,20 +42,6 @@ class Blueprint():
                         layerClass = config.layerType(units = config.units, activation = config.activation)
                         layer = layerClass.create_node(self.dataset_size)(layer)
                 layers[idx] = layer
-            
-            ### OLD version:::
-            # for idx, gene in enumerate(self.blueprint_graph, start=1):
-            #     if np.count_nonzero(gene) == 0:
-            #         layer = layer[idx-1]
-            #     else:
-            #         if np.count_nonzero(gene) > 1:
-            #             nonzero_genes = [layers[i] for i in np.nonzero(gene)[0]]
-            #             layer = tf.keras.layers.concatenate(nonzero_genes)
-            #         else:
-            #             layer = layers[np.nonzero(gene)[0][0]]
-            #     layerClass = config.layerType(units = config.units, activation = config.activation)
-            #     layer = layerClass.create_node(self.dataset_size)(layer)
-            #     layers[idx] = layer
 
             last_active_layer = None
             for layer in layers:

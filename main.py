@@ -38,7 +38,6 @@ class Config():
             self.layers_indexes[i] = idx
             idx = idx+i+1
 
-
 config = Config()
 
 def main():
