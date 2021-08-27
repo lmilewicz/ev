@@ -1,0 +1,7 @@
+numpy
+pandas
+pymoo
+tensorboard
+tensorflow
+tensorflow-gpu
+tensorflow-probability
