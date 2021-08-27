@@ -6,6 +6,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
 
+import numpy as np
 from pymoo.algorithms.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
@@ -24,12 +25,18 @@ class Config():
         self.input_shape = (28, 28, 1)
         self.n_epochs = 5
         self.batch_size = 512
-        self.layerType = node.DenseFlipout #  DenseLayer
+        self.layerType = node.DenseLayer    #  node.DenseLayer or node.DenseFlipout
         self.learning_rate = 0.01
         self.units = 10
         self.activation = 'relu'
         self.out_units = 10
         self.out_activation = 'softmax'
+        self.layers_indexes = np.zeros(self.max_layers, dtype=np.int)
+        
+        idx = 0
+        for i in range(self.max_layers):
+            self.layers_indexes[i] = idx
+            idx = idx+i+1
 
 
 config = Config()

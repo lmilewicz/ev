@@ -3,11 +3,12 @@ import tensorflow as tf
 
 from pymoo.model.problem import Problem
 from pymoo.model.sampling import Sampling
-from pymoo.operators.mutation.polynomial_mutation import PolynomialMutation
+# from pymoo.operators.mutation.polynomial_mutation import PolynomialMutation
 from pymoo.model.mutation import Mutation
 
 from blueprint import Blueprint
 from data_loader import DataLoader
+from misc import remove_disconected_layers
 
 def do_every_generations(algorithm):
     gen = algorithm.n_gen
@@ -36,7 +37,7 @@ class EVProblem(Problem):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
 
         for i in range(x.shape[0]):
-            blueprint_object = Blueprint(genome=x, config=self.config, dataset_size = len(self.train_images))
+            blueprint_object = Blueprint(genome=x[i, :], config=self.config, dataset_size = len(self.train_images))
             model = blueprint_object.get_model()
             
             model.fit(x=self.train_images,
@@ -47,7 +48,8 @@ class EVProblem(Problem):
                         verbose=0)
 
             performance = model.evaluate(self.test_images, self.test_labels, verbose=0)
-
+            print(blueprint_object.blueprint_graph)
+            print(performance)
             objs[i, 0] = 1 - performance
 
         out["F"] = objs
@@ -59,7 +61,9 @@ class SamplingAll(Sampling):
         
     def _do(self, problem, n_samples, **kwargs):
         val = np.random.random((n_samples, problem.n_var))
-        return (val > 0.5).astype(np.int)
+        val = (val > 0.5).astype(np.int)
+        return remove_disconnected_layers(val, problem.config)
+
 
 class SamplingFromSmall(Sampling):
     def __init__(self) -> None:
@@ -68,8 +72,8 @@ class SamplingFromSmall(Sampling):
     def _do(self, problem, n_samples, **kwargs):
         val = np.zeros((n_samples, problem.n_var))
         val[:,0] = np.random.random(n_samples)
-        return (val > 0.5).astype(np.int)
-
+        val = (val > 0.5).astype(np.int)
+        return remove_disconnected_layers(val, problem.config)
 
 
 class MutationAll(Mutation):
@@ -90,7 +94,9 @@ class MutationAll(Mutation):
         _X[flip] = np.logical_not(X[flip])
         _X[no_flip] = X[no_flip]
 
-        return _X
+        _X = _X.astype(np.int)
+
+        return remove_disconnected_layers(_X, problem.config)
 
 class MutationFromSmall(Mutation):
     def __init__(self, prob=None):
@@ -104,10 +110,10 @@ class MutationFromSmall(Mutation):
         _X = np.full(X.shape, 0)
 
         for j in range(X.shape[0]):
-            break_loop = start = end = 0
-            for i in range(problem.max_layers-1):
-                start = end
-                end = start+i+1
+            break_loop = 0
+            for i in range(len(problem.config.layers_indexes)-1):
+                start = problem.config.layers_indexes[i]
+                end = problem.config.layers_indexes[i+1]
                 X_layer = X[j, start:end].copy()
                 _X_layer = X[j, start:end].copy()
                 if(np.sum(X_layer))==0:
@@ -125,5 +131,5 @@ class MutationFromSmall(Mutation):
 
                 if(break_loop): break
 
-        return _X
+        return remove_disconnected_layers(_X, problem.config)
 
