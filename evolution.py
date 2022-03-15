@@ -1,23 +1,28 @@
 import numpy as np
-import tensorflow as tf
 
-from pymoo.model.problem import Problem
-from pymoo.model.sampling import Sampling
-from pymoo.model.mutation import Mutation
+from pymoo.core.problem import Problem
+from pymoo.core.sampling import Sampling
+from pymoo.core.mutation import Mutation
 
 from blueprint import Blueprint
 from data_loader import DataLoader
-from misc import remove_disconnected_layers
+from misc import remove_disconnected_layers, get_params_number, blueprint_convert
+from config import Config
 
 def do_every_generations(algorithm):
     gen = algorithm.n_gen
     pop_obj = algorithm.pop.get("F")
-
-    print("generation = {}".format(gen))
+    X = algorithm.pop.get("X")
+    print("Generation = {}".format(gen))
     print("population error: best = {}, mean = {}, "
                  "median = {}, worst = {}".format(np.min(pop_obj[:, 0]), np.mean(pop_obj[:, 0]),
                                                   np.median(pop_obj[:, 0]), np.max(pop_obj[:, 0])))
-    
+    best_index = np.argmin(pop_obj[:, 0])
+    best_genome = blueprint_convert(X[best_index, :], Config().layers_indexes)
+    print('Best genome: {}'.format(best_genome))
+    print('Error = {:.3f}, params number = {:.2e}'.format(1-pop_obj[best_index, 0], pop_obj[best_index, 1]))
+    print('\n')
+
 class EVProblem(Problem):
     def __init__(self, config):
         max_connections = int((config.max_layers-1)*config.max_layers/2) 
@@ -30,24 +35,35 @@ class EVProblem(Problem):
         self.xl = np.zeros(max_connections)
         self.xu = np.ones(max_connections)
 
-        (self.train_images, self.train_labels), (self.test_images, self.test_labels) = DataLoader(config.dataset)
+        self.ds_train, self.ds_test, self.ds_info = DataLoader(config.dataset, config.batch_size)
 
     def _evaluate(self, x, out, *args, **kwargs):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
-
+        best_perf = 0
         for i in range(x.shape[0]):
-            blueprint_object = Blueprint(genome=x[i, :], config=self.config, dataset_size = len(self.train_images))
+            blueprint_object = Blueprint(
+                                    genome=x[i, :], 
+                                    config=self.config, 
+                                    dataset_size = self.ds_info.splits['train'].num_examples
+                                    )
             model = blueprint_object.get_model()
-            
-            model.fit(x=self.train_images,
-                        y=self.train_labels,
+
+            history = model.fit(self.ds_train,
                         epochs=self.config.n_epochs,
                         use_multiprocessing=True,
                         batch_size=self.config.batch_size,
+                        validation_data=self.ds_test,
                         verbose=0)
-
-            performance = model.evaluate(self.test_images, self.test_labels, verbose=0)
+            performance = history.history['val_sparse_categorical_accuracy'][-1]
             objs[i, 0] = 1 - performance
+            objs[i, 1] = get_params_number(model)
+
+            if performance > best_perf:
+                best_perf = performance
+                best_model = model
+
+        print('Best perf: '+str(best_perf))
+        best_model.summary()
 
         out["F"] = objs
 

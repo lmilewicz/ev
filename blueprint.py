@@ -13,7 +13,11 @@ class Blueprint():
         self.blueprint_graph = blueprint_convert(genome, layers_indexes=config.layers_indexes)
         self.process_graph()
 
-        self.model.compile(optimizer=tf.keras.optimizers.Adam(config.learning_rate), loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True))
+        self.model.compile(
+            optimizer=tf.keras.optimizers.Adam(config.learning_rate),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+        )
         
     def process_graph(self):
             tf.keras.backend.clear_session()
@@ -48,7 +52,7 @@ class Blueprint():
                 if(layer == None): break
                 else: last_active_layer = layer
 
-            if(last_active_layer==None):
+            if(last_active_layer == None):
                 raise ValueError("In Blueprint: last_active_layer should have never been None!!!")
             else:
                 output = tf.keras.layers.Dense(units=config.out_units, activation=config.out_activation)(last_active_layer)

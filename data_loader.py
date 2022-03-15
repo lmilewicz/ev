@@ -1,12 +1,34 @@
 import tensorflow as tf
+import tensorflow_datasets as tfds
 
 class DataLoader():
-    def __new__(self, dataset):
+    def __new__(self, dataset, batch_size):
         if dataset == 'MNIST':
-            dataset = tf.keras.datasets.mnist.load_data()
-            (train_images, train_labels), (test_images, test_labels) = dataset
-            train_images, test_images = train_images / 255.0, test_images / 255.0
+            (ds_train, ds_test), ds_info = tfds.load(
+                'mnist',
+                split=['train', 'test'],
+                shuffle_files=True,
+                as_supervised=True,
+                with_info=True,
+            )
+            ds_train = ds_train.map(
+                normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            ds_train = ds_train.cache()
+            ds_train = ds_train.shuffle(buffer_size=1000) # ds_info.splits['train'].num_examples)
+            ds_train = ds_train.batch(batch_size)
+            ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+
+            ds_test = ds_test.map(
+                normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            ds_test = ds_test.batch(batch_size)
+            ds_test = ds_test.cache()
+            ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+
         else:
             raise NotImplementedError("Dataset {} for DataLoader not implemented".format(dataset))
         
-        return (train_images, train_labels), (test_images, test_labels)
+        return ds_train, ds_test, ds_info
+
+def normalize_img(image, label):
+    """Normalizes images: `uint8` -> `float32`."""
+    return tf.cast(image, tf.float32) / 255., label
