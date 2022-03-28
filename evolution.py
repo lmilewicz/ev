@@ -5,67 +5,82 @@ from pymoo.core.sampling import Sampling
 from pymoo.core.mutation import Mutation
 
 from blueprint import Blueprint
-from data_loader import DataLoader
-from misc import remove_disconnected_layers, get_params_number, blueprint_convert
-from config import Config
+from misc import get_params_number, genome_convert
+from misc import remove_disconnected_layers
 
-def do_every_generations(algorithm):
-    gen = algorithm.n_gen
-    pop_obj = algorithm.pop.get("F")
-    X = algorithm.pop.get("X")
-    print("Generation = {}".format(gen))
-    print("population error: best = {}, mean = {}, "
-                 "median = {}, worst = {}".format(np.min(pop_obj[:, 0]), np.mean(pop_obj[:, 0]),
-                                                  np.median(pop_obj[:, 0]), np.max(pop_obj[:, 0])))
-    best_index = np.argmin(pop_obj[:, 0])
-    best_genome = blueprint_convert(X[best_index, :], Config().layers_indexes)
-    print('Best genome: {}'.format(best_genome))
-    print('Error = {:.3f}, params number = {:.2e}'.format(1-pop_obj[best_index, 0], pop_obj[best_index, 1]))
-    print('\n')
+from config import Config
+import time
+from statistics import mean
+
 
 class EVProblem(Problem):
     def __init__(self, config):
-        max_connections = int((config.max_layers-1)*config.max_layers/2) 
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
-
-        super().__init__(n_var=max_connections, n_obj=config.n_obj, n_constr=config.n_constr, type_var=np.int)
+        super().__init__(
+                n_var=config.genome_len, n_obj=config.pop_size, 
+                n_constr=config.n_constr, type_var=np.int)
 
         self.config = config
-        self.max_layers = config.max_layers
-        self.xl = np.zeros(max_connections)
-        self.xu = np.ones(max_connections)
-
-        self.ds_train, self.ds_test, self.ds_info = DataLoader(config.dataset, config.batch_size)
+        self.xl = np.zeros(config.genome_len)
+        self.xu = np.ones(config.genome_len)
 
     def _evaluate(self, x, out, *args, **kwargs):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
         best_perf = 0
         for i in range(x.shape[0]):
-            blueprint_object = Blueprint(
-                                    genome=x[i, :], 
-                                    config=self.config, 
-                                    dataset_size = self.ds_info.splits['train'].num_examples
-                                    )
+
+            time1 = time.time()
+            blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
 
-            history = model.fit(self.ds_train,
+            time2 = time.time()
+            self.config.blueprint_time.append(time2-time1)
+
+            history = model.fit(self.config.ds_train,
                         epochs=self.config.n_epochs,
                         use_multiprocessing=True,
                         batch_size=self.config.batch_size,
-                        validation_data=self.ds_test,
+                        validation_data=self.config.ds_test,
                         verbose=0)
+
+            self.config.fit_time.append(time.time()-time2)
+
             performance = history.history['val_sparse_categorical_accuracy'][-1]
             objs[i, 0] = 1 - performance
             objs[i, 1] = get_params_number(model)
 
-            if performance > best_perf:
+            if self.config.debug and performance > best_perf:
                 best_perf = performance
                 best_model = model
 
-        print('Best perf: '+str(best_perf))
-        best_model.summary()
+        print('Timestats: blueprint_time: '
+                +str(round(mean(self.config.blueprint_time), 2))
+                +'. fit_time: '
+                +str(round(mean(self.config.fit_time), 2)))
+        
+        if self.config.debug:
+            print('Best perf: '+str(round(best_perf, 4)))
+            best_model.summary()
 
-        out["F"] = objs
+        out['F'] = objs
+
+
+def do_every_generations(algorithm):
+    gen = algorithm.n_gen
+    pop_obj = algorithm.pop.get('F')
+    X = algorithm.pop.get('X')
+    print('Generation = {}'.format(gen))
+    print('population error: best = {:.3f}, mean = {:.3f}, median = {:.3f}, worst = {:.3f}'.format(
+                np.min(pop_obj[:, 0]), 
+                np.mean(pop_obj[:, 0]),
+                np.median(pop_obj[:, 0]), 
+                np.max(pop_obj[:, 0])))
+    best_index = np.argmin(pop_obj[:, 0])
+    best_genome = genome_convert(X[best_index, :], Config().layers_indexes)
+    print('Best genome: {}'.format(best_genome))
+    print('Result = {:.3f}, params number = {:.2e}'
+        .format(1-pop_obj[best_index, 0], pop_obj[best_index, 1]))
+    print('\n')
 
 
 class SamplingAll(Sampling):

@@ -16,6 +16,13 @@ from pymoo.optimize import minimize
 import evolution
 from config import Config
 
+
+# To speed calcualtions:
+# import numba as nb
+# @nb.njit
+# or @nb.jit e.g.--> @nb.jit(nb.f8[:,:](nb.f8[:,:], nb.f8[:,:]), forceobj=True)
+
+
 config = Config()
 
 def main():
@@ -40,7 +47,7 @@ def main():
                             gamma=0.85, 
                             alpha=0.2)
     else:
-        raise ValueError("Algorithm not chosen!")
+        raise ValueError('Algorithm not chosen!')
 
     res = minimize(problem, 
                     algorithm, 
@@ -48,5 +55,5 @@ def main():
                     termination=config.termination)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

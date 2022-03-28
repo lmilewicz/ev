@@ -25,10 +25,10 @@ class DataLoader():
             ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
         else:
-            raise NotImplementedError("Dataset {} for DataLoader not implemented".format(dataset))
+            raise NotImplementedError('Dataset {} for DataLoader not implemented'.format(dataset))
         
         return ds_train, ds_test, ds_info
 
 def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
+    ###### Normalizes images: `uint8` -> `float32`
     return tf.cast(image, tf.float32) / 255., label

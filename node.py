@@ -1,5 +1,7 @@
+from random import random
 import tensorflow as tf
 import tensorflow_probability as tfp
+import random
 
 from abc import ABCMeta, abstractmethod
 
@@ -11,7 +13,7 @@ class Node(object, metaclass=ABCMeta):
 
     @abstractmethod
     def create_node(self) -> tf.keras.layers.Layer:
-        raise NotImplementedError("Subclass of Node does not implement create_node()'")
+        raise NotImplementedError('Subclass of Node does not implement create_node()')
 
 class NodeTFP(Node):
     def __init__(self, units, activation):
@@ -44,17 +46,27 @@ class DenseFlipout(NodeTFP):
                                     # bias_initializer=self.bias_init,
                                     dtype=self.dtype)
 
+
 class Convolution2D(Node):
     def __init__(self, units, activation):
         super().__init__(units, activation)
 
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-        return tf.keras.layers.Conv2D(units=self.units, 
-                                        kernel_size=5, 
-                                        strides=(1,1),
-                                        padding="same", 
+    def create_node(self, dataset_size) -> tf.keras.layers.Layer:                                      
+        return tf.keras.layers.Conv2D(filters=1, 
+                                        kernel_size=(3,3),
+                                        padding='same',
                                         dtype=self.dtype)
 
+# class Convolution2D(Node):
+#     def __init__(self, units, activation):
+#         super().__init__(units, activation)
+
+#     def create_node(self, dataset_size) -> tf.keras.layers.Layer:
+#         return tf.keras.layers.Conv2D(filter=self.units, 
+#                                         kernel_size=5, 
+#                                         strides=(1,1),
+#                                         padding='same', 
+#                                         dtype=self.dtype)
 
 class Convolution2DFlipout(NodeTFP):
     def __init__(self, units, activation):
@@ -62,17 +74,16 @@ class Convolution2DFlipout(NodeTFP):
 
     def create_node(self, dataset_size) -> tf.keras.layers.Layer:
         super().create_node(dataset_size)
-        return tfp.layers.Convolution2DFlipout(units=self.units, 
+        return tfp.layers.Convolution2DFlipout(filters=1, 
                                         kernel_size=5, 
                                         strides=(1,1), 
-                                        padding="same", 
+                                        padding='same', 
                                         activation=self.activation, 
                                         kernel_divergence_fn=self.kl_divergence_function,
                                         dtype=self.dtype)
 
-class MaxPool2D(Node):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
+# def MaxPool2D():
+#     return tf.keras.layers.MaxPool2D(strides=(4,4), pool_size=(4,4), padding='same')
 
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-        return tf.keras.layers.MaxPool2D(strides=(4,4), pool_size=(4,4), padding="same")
+def MaxPool2D():
+    return tf.keras.layers.MaxPool2D((2, 2))
