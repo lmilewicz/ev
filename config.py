@@ -4,6 +4,32 @@ import tensorflow as tf
 
 from data_loader import DataLoader
 
+''' To-do list:
+1)
+- Add last bit on genome that signifies the output layer type ### done
+- Set up evaluation for probabilistic layer/XGboost
+- Add XGBoost as output layer
+- Improve mutation/sampling with different output layers
+
+Testing:
+- save genomes/models/testing state after specified number of generations/time spend
+- stop testing and save testing state with an input key
+- enable testing from saved point
+- set-up jupyter board for online improvements
+
+
+2)
+- Add probabilistic Dense and Conv layers
+- Different Conv layers/conv filers
+- How to use graph to show different layer types. Current graph is focused on connection 
+
+3) Different modules connections? Non sequential modules connection?
+
+
+
+'''
+
+
 class Config():
     def __init__(self):
         self.n_layers = 3
