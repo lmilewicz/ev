@@ -1,5 +1,5 @@
 import tensorflow as tf
-import numpy as np
+import tensorflow_probability as tfp
 
 from module import Module
 import node
@@ -11,14 +11,13 @@ class Blueprint():
         if config.debug: print('Blueprint:', genome)
         
         tf.keras.backend.clear_session()
-
-        input = tf.keras.Input(shape=config.input_shape, dtype=tf.float32)
+        
+        input = tf.keras.Input(shape=config.input_shape, dtype=config.dtype)
         layer_type = node.Convolution2D
 
         last_layer = input
         
         for i in range(config.n_modules):
-
             if i == config.n_conv_modules:
                 last_layer = node.MaxPool2D()(last_layer)
                 last_layer = tf.keras.layers.Flatten()(last_layer)
@@ -29,10 +28,22 @@ class Blueprint():
 
             last_layer = module.get_module()
 
-        output = tf.keras.layers.Dense(
-                units=config.out_units, 
-                name='out_layer',
-                activation=config.out_activation)(last_layer)
+        if genome[-1] == 0:
+            output = tf.keras.layers.Dense(
+                        units=config.out_units, 
+                        name='out_dense_layer',
+                        activation=config.out_activation,
+                        dtype=config.dtype)(last_layer)
+        elif genome[-1] == 1:
+            output = tfp.layers.DenseFlipout(units=config.out_units,
+                                    name='out_prob_layer',
+                                    kernel_divergence_fn=config.kl_divergence_function,
+                                    activation=config.out_activation,
+                                    dtype=config.dtype)(last_layer)
+        # elif genome[-1] == 2:
+        #     TO DO --> XGboost
+        else:
+            raise ValueError('In Blueprint: undefined output: '+str(genome[-1]))
 
 
         self.model = tf.keras.Model(input, output)

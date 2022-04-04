@@ -1,10 +1,25 @@
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
+
+import node
+
 
 def genome_convert(genome, layers_indexes):
     #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
+
+
+def get_params_dict(config, layer_type):
+	params_dict = {'activation':	config.activation,
+					'dtype':		tf.float32,
+					'prob_layer':	False}
+	if layer_type == node.DenseLayer:
+		params_dict['units'] = config.units
+	elif layer_type == node.Convolution2D:
+		params_dict['kernel_size'] = config.kernel_size
+	else:
+		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
+	return params_dict
 
 
 def remove_disconnected_layers(X, config):
@@ -46,7 +61,7 @@ def get_flops(model):
     concrete = tf.function(lambda inputs: model(inputs))
     concrete_func = concrete.get_concrete_function(
         [tf.TensorSpec([1, *inputs.shape[1:]]) for inputs in model.inputs])
-    frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(concrete_func)
+    frozen_func, graph_def = tf.python.framework.convert_to_constants.convert_variables_to_constants_v2_as_graph(concrete_func)
     with tf.Graph().as_default() as graph:
         tf.graph_util.import_graph_def(graph_def, name='')
         run_meta = tf.compat.v1.RunMetadata()

@@ -5,10 +5,10 @@ from pymoo.core.sampling import Sampling
 from pymoo.core.mutation import Mutation
 
 from blueprint import Blueprint
-from misc import get_params_number, genome_convert
-from misc import remove_disconnected_layers
+from misc import get_params_number, genome_convert, remove_disconnected_layers
 
 from config import Config
+
 import time
 from statistics import mean
 
@@ -16,9 +16,8 @@ from statistics import mean
 class EVProblem(Problem):
     def __init__(self, config):
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
-        super().__init__(
-                n_var=config.genome_len, n_obj=config.pop_size, 
-                n_constr=config.n_constr, type_var=np.int)
+        super().__init__(n_var=config.genome_len, n_obj=config.pop_size, 
+            n_constr=config.n_constr, type_var=np.int)
 
         self.config = config
         self.xl = np.zeros(config.genome_len)
@@ -27,15 +26,15 @@ class EVProblem(Problem):
     def _evaluate(self, x, out, *args, **kwargs):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
         best_perf = 0
-        for i in range(x.shape[0]):
 
+        for i in range(x.shape[0]):
             time1 = time.time()
+
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
 
             time2 = time.time()
             self.config.blueprint_time.append(time2-time1)
-
             history = model.fit(self.config.ds_train,
                         epochs=self.config.n_epochs,
                         use_multiprocessing=True,
@@ -71,10 +70,10 @@ def do_every_generations(algorithm):
     X = algorithm.pop.get('X')
     print('Generation = {}'.format(gen))
     print('population error: best = {:.3f}, mean = {:.3f}, median = {:.3f}, worst = {:.3f}'.format(
-                np.min(pop_obj[:, 0]), 
-                np.mean(pop_obj[:, 0]),
-                np.median(pop_obj[:, 0]), 
-                np.max(pop_obj[:, 0])))
+        np.min(pop_obj[:, 0]), 
+        np.mean(pop_obj[:, 0]),
+        np.median(pop_obj[:, 0]), 
+        np.max(pop_obj[:, 0])))
     best_index = np.argmin(pop_obj[:, 0])
     best_genome = genome_convert(X[best_index, :], Config().layers_indexes)
     print('Best genome: {}'.format(best_genome))

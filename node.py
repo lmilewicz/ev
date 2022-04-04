@@ -1,89 +1,61 @@
-from random import random
-import tensorflow as tf
-import tensorflow_probability as tfp
-import random
-
 from abc import ABCMeta, abstractmethod
 
+import tensorflow as tf
+import tensorflow_probability as tfp
+
+from config import Config
+
+
 class Node(object, metaclass=ABCMeta):
-    def __init__(self, units, activation):
-            self.dtype = tf.float32
-            self.units = units
-            self.activation = activation
+    def __init__(self, params_dict):
+            if 'units' in params_dict: self.units = params_dict['units']
+            if 'activation' in params_dict: self.activation = params_dict['activation']
+            if 'kernel_size' in params_dict: self.kernel_size = params_dict['kernel_size']
+            if 'dtype' in params_dict: self.dtype = params_dict['dtype']
+
+            self.prob_layer = False
+            if 'prob_layer' in params_dict: self.prob_layer = params_dict['prob_layer']
 
     @abstractmethod
     def create_node(self) -> tf.keras.layers.Layer:
         raise NotImplementedError('Subclass of Node does not implement create_node()')
 
-class NodeTFP(Node):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
-        self.kl_divergence_function = None
 
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-        self.kl_divergence_function = (lambda q, p, _: tfp.distributions.kl_divergence(q, p) / tf.cast(dataset_size, dtype=self.dtype))
-        
 class DenseLayer(Node):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
+    def __init__(self, params_dict):
+        super().__init__(params_dict)
 
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
+    def create_node(self) -> tf.keras.layers.Layer:
+        if self.prob_layer:
+            config = Config()
+            return tfp.layers.DenseFlipout(units=self.units,
+                                    kernel_divergence_fn=config.kl_divergence_function,
+                                    activation=self.activation,
+                                    dtype=self.dtype)
         return tf.keras.layers.Dense(units=self.units,
                                     activation=self.activation,
-                                    # kernel_initializer=self.kernel_init,
-                                    # bias_initializer=self.bias_init,
-                                    dtype=self.dtype)
-class DenseFlipout(NodeTFP):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
-
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-        super().create_node(dataset_size)
-        return tfp.layers.DenseFlipout(units=self.units,
-                                    kernel_divergence_fn=self.kl_divergence_function,
-                                    activation=self.activation,
-                                    # kernel_initializer=self.kernel_init,
-                                    # bias_initializer=self.bias_init,
                                     dtype=self.dtype)
 
 
 class Convolution2D(Node):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
+    def __init__(self, params_dict):
+        super().__init__(params_dict)
 
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:                                      
+    def create_node(self) -> tf.keras.layers.Layer:                                      
+        if self.prob_layer:
+            config = Config()
+            return tfp.layers.Convolution2DFlipout(filters=1, 
+                                    kernel_size=self.kernel_size, 
+                                    padding='same', 
+                                    activation=self.activation, 
+                                    kernel_divergence_fn=config.kl_divergence_function,
+                                    dtype=self.dtype)
         return tf.keras.layers.Conv2D(filters=1, 
-                                        kernel_size=(3,3),
-                                        padding='same',
-                                        dtype=self.dtype)
+                                    kernel_size=self.kernel_size,
+                                    padding='same',
+                                    activation=self.activation, 
+                                    dtype=self.dtype)
 
-# class Convolution2D(Node):
-#     def __init__(self, units, activation):
-#         super().__init__(units, activation)
-
-#     def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-#         return tf.keras.layers.Conv2D(filter=self.units, 
-#                                         kernel_size=5, 
-#                                         strides=(1,1),
-#                                         padding='same', 
-#                                         dtype=self.dtype)
-
-class Convolution2DFlipout(NodeTFP):
-    def __init__(self, units, activation):
-        super().__init__(units, activation)
-
-    def create_node(self, dataset_size) -> tf.keras.layers.Layer:
-        super().create_node(dataset_size)
-        return tfp.layers.Convolution2DFlipout(filters=1, 
-                                        kernel_size=5, 
-                                        strides=(1,1), 
-                                        padding='same', 
-                                        activation=self.activation, 
-                                        kernel_divergence_fn=self.kl_divergence_function,
-                                        dtype=self.dtype)
-
-# def MaxPool2D():
-#     return tf.keras.layers.MaxPool2D(strides=(4,4), pool_size=(4,4), padding='same')
 
 def MaxPool2D():
-    return tf.keras.layers.MaxPool2D((2, 2))
+    return tf.keras.layers.MaxPool2D(pool_size=(2, 2))
