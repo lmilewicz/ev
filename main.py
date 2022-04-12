@@ -1,3 +1,7 @@
+# Semantation fault debug:
+# import sys
+# sys.settrace
+
 # To disable Tensorflow warnings:
 # 0 = all messages are logged (default behavior)
 # 1 = INFO messages are not printed
@@ -6,7 +10,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
 
-import numpy as np
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.algorithms.moo.unsga3 import UNSGA3
 from pymoo.algorithms.soo.nonconvex.isres import ISRES

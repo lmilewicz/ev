@@ -9,7 +9,6 @@ from misc import get_params_number, genome_convert, remove_disconnected_layers
 
 from config import Config
 
-import time
 from statistics import mean
 
 
@@ -28,23 +27,11 @@ class EVProblem(Problem):
         best_perf = 0
 
         for i in range(x.shape[0]):
-            time1 = time.time()
-
+            x[i, -1] = 1
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
+            performance = blueprint_object.evaluate_model()
 
-            time2 = time.time()
-            self.config.blueprint_time.append(time2-time1)
-            history = model.fit(self.config.ds_train,
-                        epochs=self.config.n_epochs,
-                        use_multiprocessing=True,
-                        batch_size=self.config.batch_size,
-                        validation_data=self.config.ds_test,
-                        verbose=0)
-
-            self.config.fit_time.append(time.time()-time2)
-
-            performance = history.history['val_sparse_categorical_accuracy'][-1]
             objs[i, 0] = 1 - performance
             objs[i, 1] = get_params_number(model)
 
@@ -55,7 +42,9 @@ class EVProblem(Problem):
         print('Timestats: blueprint_time: '
                 +str(round(mean(self.config.blueprint_time), 2))
                 +'. fit_time: '
-                +str(round(mean(self.config.fit_time), 2)))
+                +str(round(mean(self.config.fit_time), 2))
+                +'. performance_time: '
+                +str(round(mean(self.config.performance_time), 2)))
         
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))
