@@ -144,20 +144,11 @@ def xgb_performance(config, xgboost_input_layer):
     dtrain = xgb.DMatrix(xgboost_train_input, label=train_labels)
     dtest = xgb.DMatrix(xgboost_test_input, label=test_labels)
 
-    params = {
-		'max_depth':6,
-		# 'eta':0.05,
-		'objective':'multi:softprob',
-		'num_class':config.out_units,
-		# 'early_stopping_rounds':10,
-		'eval_metric':'merror'
-	}
     watchlist = [(dtrain, 'train'),(dtest, 'eval')]
 
     results = {}
-    n_round = 10
 
-    model = xgb.train(params, dtrain, n_round, watchlist, verbose_eval=False, evals_result=results)
+    model = xgb.train(config.xgboost_params, dtrain, config.xgboost_n_round, watchlist, verbose_eval=False, evals_result=results)
     model.__del__()
 
     return 1-results['eval']['merror'][-1]

@@ -27,7 +27,7 @@ class EVProblem(Problem):
         best_perf = 0
 
         for i in range(x.shape[0]):
-            x[i, -1] = 1
+            # x[i, -1] = 2
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
             performance = blueprint_object.evaluate_model()
@@ -101,17 +101,29 @@ class MutationAll(Mutation):
         if self.prob is None:
             self.prob = 1.0 / problem.n_var
 
-        X = X.astype(np.bool)
-        _X = np.full(X.shape, np.inf)
+        X_without_output = X[:,:-1].copy().astype(np.bool)
+        X_output = X[:,-1].copy()
 
-        M = np.random.random(X.shape)
+        _X = np.full(X_without_output.shape, np.inf)
+
+        M = np.random.random(X_without_output.shape)
         flip, no_flip = M < self.prob, M >= self.prob
 
-        _X[flip] = np.logical_not(X[flip])
-        _X[no_flip] = X[no_flip]
+        _X[flip] = np.logical_not(X_without_output[flip])
+        _X[no_flip] = X_without_output[no_flip]
 
         _X = _X.astype(np.int)
 
+        ### Output layer mutation::: ###
+        X_output = X_output.reshape(len(X_output),1)
+        M = np.random.random(X_output.shape)
+        flip, no_flip = M < self.prob/2, M >= self.prob/2
+
+        X_output[flip] = np.mod(X_output[flip]+1, 3)
+        X_output[no_flip] = X_output[no_flip]
+        #################################
+
+        _X = np.append(_X, X_output, axis=1)
         return remove_disconnected_layers(_X, problem.config)
 
 class MutationFromSmall(Mutation):
