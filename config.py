@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow_probability as tfp
 import tensorflow as tf
+from datetime import datetime
 
 from data_loader import DataLoader
 
@@ -53,7 +54,8 @@ class Config():
         self.dataset_size = ds_info.splits['train'].num_examples
         self.input_shape = ds_info.features['image'].shape
         self.out_units = ds_info.features['label'].num_classes
-        
+
+
         ### Evolution settings  ###
         self.n_layers = 3
         self.pop_size = 2           ##################
@@ -62,12 +64,14 @@ class Config():
         self.n_gen = 2              ##################
         self.termination = ('n_gen', self.n_gen)
 
+
         ### Genome settings     ###
         self.n_conv_modules = 1
         self.n_ann_modules = 1
         self.n_modules = self.n_conv_modules+self.n_ann_modules
         self.module_genome_len = int(self.n_layers*(self.n_layers-1)*0.5)
         self.genome_len = self.module_genome_len*self.n_modules + 1 # +1 for output bit
+
 
         ### ANN settings        ###
         self.learning_rate = 0.001
@@ -78,6 +82,7 @@ class Config():
         self.kernel_size = 3        ## To optimize
         self.activation = 'relu'    ## To optimize
         self.dtype = tf.float32
+
 
         ### XGBoost settings    ###
         self.xgboost_params = {
@@ -90,6 +95,11 @@ class Config():
         }
         self.xgboost_n_round = 10
 
+
+        ### Test settings ###
+        self.save_model = True
+        self.log_stats = True
+        self.best_model = None
 
         ### Global values/settings ###
         self.kl_divergence_function = (lambda q, p, _:
@@ -104,6 +114,11 @@ class Config():
             self.layers_indexes[i] = idx
             idx = idx+i+1
 
+        now = datetime.now()
+        self.time = now.strftime("%H:%M:%S")
+
+
+        ### Time benchmarks ###
         self.blueprint_time = []
         self.fit_time = []
         self.performance_time = []

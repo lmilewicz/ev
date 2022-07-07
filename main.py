@@ -16,7 +16,7 @@ from pymoo.algorithms.soo.nonconvex.isres import ISRES
 
 from pymoo.optimize import minimize
 
-import evolution
+import evolution, evolution_operations
 from config import Config
 
 
@@ -30,21 +30,21 @@ def main():
     config = Config()
     problem = evolution.EVProblem(config)
     algorithm = NSGA2(pop_size=config.pop_size,
-                    sampling=evolution.SamplingAll(),
-                    mutation=evolution.MutationAll(),
+                    sampling=evolution_operations.SamplingAll(),
+                    mutation=evolution_operations.MutationAll(),
                     eliminate_duplicates=True)
 
     # if config.algorithm == 'NSGA2': # https://pymoo.org/algorithms/moo/nsga2.html
     #     algorithm = NSGA2(pop_size=config.pop_size,
-    #                         sampling=evolution.SamplingAll(),
-    #                         mutation=evolution.MutationAll(),
+    #                         sampling=evolution_operations.SamplingAll(),
+    #                         mutation=evolution_operations.MutationAll(),
     #                         eliminate_duplicates=True)
                             
     # elif config.algorithm == 'UNSGA3': # https://pymoo.org/algorithms/moo/unsga3.html
     #     ref_dirs = np.array([[0.0, 0.0]])
     #     algorithm = UNSGA3(ref_dirs,
-    #                         sampling=evolution.SamplingAll(),
-    #                         mutation=evolution.MutationAll(),
+    #                         sampling=evolution_operations.SamplingAll(),
+    #                         mutation=evolution_operations.MutationAll(),
     #                         eliminate_duplicates=True)
 
     # elif config.algorithm == 'ISRES': # https://pymoo.org/algorithms/soo/isres.html
