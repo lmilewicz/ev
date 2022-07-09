@@ -25,9 +25,14 @@ from config import Config
 # @nb.njit
 # or @nb.jit e.g.--> @nb.jit(nb.f8[:,:](nb.f8[:,:], nb.f8[:,:]), forceobj=True)
 
+from test import load_saved_state
 
 def main():
     config = Config()
+
+    # load_saved_state()
+
+    # assert 1 == 2
     problem = evolution.EVProblem(config)
     algorithm = NSGA2(pop_size=config.pop_size,
                     sampling=evolution_operations.SamplingAll(),

@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow_probability as tfp
 import tensorflow as tf
 from datetime import datetime
+import time
 
 from data_loader import DataLoader
 
@@ -100,6 +101,7 @@ class Config():
         self.save_model = True
         self.log_stats = True
         self.best_model = None
+        self.verbose = False
 
         ### Global values/settings ###
         self.kl_divergence_function = (lambda q, p, _:
@@ -115,12 +117,17 @@ class Config():
             idx = idx+i+1
 
         now = datetime.now()
-        self.time = now.strftime("%H:%M:%S")
+        self.time = now.strftime("%Y%m%d_%H%M%S")
 
 
         ### Time benchmarks ###
         self.blueprint_time = []
         self.fit_time = []
         self.performance_time = []
+        self.start_time = time.time()
+
+
+        log_dir = 'logs'
+        self.tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 

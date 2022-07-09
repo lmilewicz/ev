@@ -43,8 +43,7 @@ class EVProblem(Problem):
 
         out['F'] = objs
 
-
 def do_every_generations(algorithm):
-
+    
     if algorithm.problem.config.log_stats: log_stats(algorithm)
     if algorithm.problem.config.save_model: save_model(algorithm)

@@ -1,3 +1,4 @@
+from gc import callbacks
 import tensorflow as tf
 import tensorflow_probability as tfp
 
@@ -92,7 +93,8 @@ class Blueprint():
                     epochs=self.config.n_epochs,
                     use_multiprocessing=True,
                     batch_size=self.config.batch_size,
-                    verbose=0)
+                    verbose=0,)
+                    #callbacks=[self.config.tensorboard_callback])
 
         time2 = time.time()
         self.config.fit_time.append(time2-time1)
