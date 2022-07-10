@@ -11,8 +11,11 @@ class SamplingAll(Sampling):
         super().__init__()
         
     def _do(self, problem, n_samples, **kwargs):
-        val = np.random.random((n_samples, problem.n_var))
-        val = (val > 0.5).astype(np.int)
+        if problem.config.load_genomes != None:
+            val = np.array(problem.config.load_genomes.copy())
+        else:
+            val = np.random.random((n_samples, problem.n_var))
+            val = (val > 0.5).astype(np.int)
         return remove_disconnected_layers(val, problem.config)
 
 
@@ -21,9 +24,13 @@ class SamplingFromSmall(Sampling):
         super().__init__()
         
     def _do(self, problem, n_samples, **kwargs):
-        val = np.zeros((n_samples, problem.n_var))
-        val[:,0] = np.random.random(n_samples)
-        val = (val > 0.5).astype(np.int)
+        if problem.config.load_genomes != None:
+            val = np.array(problem.config.load_genomes.copy())
+        else:
+            val = np.zeros((n_samples, problem.n_var))
+            val[:,0] = np.random.random(n_samples)
+            val = (val > 0.5).astype(np.int)
+
         return remove_disconnected_layers(val, problem.config)
 
 

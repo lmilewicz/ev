@@ -22,6 +22,13 @@ def get_params_dict(config, layer_type):
 	return params_dict
 
 
+def new_genome_convert(genome, layers_indexes):
+    #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
+    return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
+
+
+
+
 def remove_disconnected_layers(X, config):
     _X = np.zeros(X.shape, dtype=np.int)
 
