@@ -5,8 +5,9 @@ import codecs, json
 import os
 import time
 from datetime import datetime
+from tensorflow.keras.models import model_from_json
 
-from misc import genome_convert
+import misc
 
 
 def log_stats(algorithm):
@@ -16,7 +17,7 @@ def log_stats(algorithm):
     config = algorithm.problem.config
 
     best_index = np.argmin(pop_obj[:, 0])
-    best_genome = genome_convert(X[best_index, :], config.layers_indexes)
+    best_genome = misc.genome_convert(X[best_index, :], config.layers_indexes)
 
     if config.verbose:
         print('Gen = {}'.format(gen))
@@ -38,7 +39,7 @@ def log_stats(algorithm):
             +str(round(mean(config.performance_time), 2)))
     else:
         print('Gen {}, error {:.3f}, params {:.2e}, time {:.2f}, {:.2f}, {:.2f}, genome {}'.format(
-            gen,
+            config.load_gen+gen,
             np.min(pop_obj[:, 0]),
             pop_obj[best_index, 1],
             round(mean(config.fit_time),2),
@@ -48,43 +49,41 @@ def log_stats(algorithm):
 
 
 def save_model(algorithm):
-    gen = algorithm.n_gen
-    X = algorithm.pop.get('X')
     config = algorithm.problem.config
 
-    path_file = "model_json/"+str(config.time)
+    X = algorithm.pop.get('X')
+    gen = algorithm.n_gen+config.load_gen
+
+    path_file = config.path_dir+"/"+str(config.time)
     if not os.path.exists(path_file):
         os.mkdir(path_file)
 
-    genomes_file_path = path_file+"/genomes_gen_"+str(gen)+".json"
-    bestmodel_file_path = path_file+"/bestmodel_gen_"+str(gen)+".json"
+    genomes_file_path = path_file+"/"+config.genomes_path+str(gen)+".json"
+    bestmodel_file_path = path_file+"/"+config.best_model_path+str(gen)
 
-    if os.path.isfile(genomes_file_path) is False: genomes_file = []
-    else:
-        with open(genomes_file_path) as fp: genomes_file = json.load(fp)
+    # if os.path.isfile(genomes_file_path) is False: genomes_file = []
+    # else:
+    #     with open(genomes_file_path) as fp: genomes_file = json.load(fp)
 
-    genomes_file.append(X.tolist())
-    json.dump(genomes_file, codecs.open(genomes_file_path, 'w', encoding='utf-8'), 
+    # genomes_file.append(X.tolist())
+    json.dump(X.tolist(), codecs.open(genomes_file_path, 'w', encoding='utf-8'), 
             separators=(',', ':'), 
             sort_keys=True, 
             indent=4)
 
-    if os.path.isfile(bestmodel_file_path) is False: bestmodel_file = []
-    else:
-        with open(bestmodel_file_path) as fp2: bestmodel_file = json.load(fp2)
-    if config.best_model is not None: bestmodel_file.append(config.best_model.to_json())
+    best_model_json = config.best_model.to_json()
+    with open(bestmodel_file_path+".json", "w") as fp2:
+        fp2.write(best_model_json)
+    config.best_model.save_weights(bestmodel_file_path+".h5")
 
-    json.dump(bestmodel_file, codecs.open(bestmodel_file_path, 'w', encoding='utf-8'))
 
     if not algorithm.problem.config.log_stats: print('Generation = {} saved!'.format(gen))
 
 
-
-def load_saved_state(time_str="", gen=0):
-    
+def load_saved_state(config, time_str="", gen=0):
     if time_str == "":
         last_time = datetime.fromtimestamp(0)
-        for _, dirs, _ in os.walk("model_json"):
+        for _, dirs, _ in os.walk(config.path_dir):
             for dir in dirs:
                 date_time_obj = datetime.strptime(dir, '%Y%m%d_%H%M%S')
                 if date_time_obj > last_time:
@@ -92,19 +91,29 @@ def load_saved_state(time_str="", gen=0):
                     last_time = date_time_obj
 
     if gen == 0:
-        for _, _, files in os.walk("model_json/"+time_str):
+        for _, _, files in os.walk(config.path_dir+"/"+time_str):
             for file in files: 
-                if file[0] == "g":
+                if "gen" in file:
                     number = ""
                     for m in file:
                         if m.isdigit(): number = number + m
-                    if int(number) > gen: 
-                        gen = int(number)
-                        file_str = file
-    print(time_str, file_str)
+                        if m == ".": break
+                    if int(number) > gen: gen = int(number)
 
-        # for name in files:
-        #     if name.endswith(("lib", ".so")):
-        #         os.path.join(root, name)
+    genomes_file_path = config.path_dir+"/"+time_str+"/"+config.genomes_path+str(gen)+".json"
+    bestmodel_file_path = config.path_dir+"/"+time_str+"/"+config.best_model_path+str(gen)
+
+    if os.path.isfile(genomes_file_path) is False: genomes = []
+    else:
+        with open(genomes_file_path) as fp: genomes = json.load(fp)
+
+    json_file = open(bestmodel_file_path+".json", 'r')
+    best_model_json = json_file.read()
+    json_file.close()
+
+    best_model = model_from_json(best_model_json)
+    best_model.load_weights(bestmodel_file_path+".h5")
+
+    return [gen, genomes, best_model, time_str]
 
 

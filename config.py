@@ -1,11 +1,3 @@
-import numpy as np
-import tensorflow_probability as tfp
-import tensorflow as tf
-from datetime import datetime
-import time
-
-from data_loader import DataLoader
-
 '''
 Issues comments:
 - Segmentation fault: ulimit -s to see current value; increase it with ulimit -s <new_value>
@@ -38,15 +30,18 @@ Testing:
 
 '''
 
-import tensorflow as tf
 import numpy as np
+import tensorflow_probability as tfp
+import tensorflow as tf
+from datetime import datetime
+import time
 
 from data_loader import DataLoader
-
+import test
 
 
 class Config():
-    def __init__(self):
+    def __init__(self, argv):
         ### Model settings      ###
         self.dataset = 'mnist' # 'mnist' 'cifar10'
         self.batch_size = 128
@@ -56,13 +51,33 @@ class Config():
         self.input_shape = ds_info.features['image'].shape
         self.out_units = ds_info.features['label'].num_classes
 
+        ### Test settings ###
+        self.save_model = True
+        self.log_stats = True
+        self.best_model = None
+        self.verbose = False
+
+        ### Saved files ###
+        self.path_dir = "model_json"
+        self.genomes_path = "genomes_gen_"
+        self.best_model_path = "bestmodel_gen_"
+        self.algorithm_path = "algorithm_last_state"
+
+        ### Load files ###
+        [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = [0, None, None, ""]
+        if len(argv)>1 and int(argv[1]) > 0:
+            [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = test.load_saved_state(self)
+
 
         ### Evolution settings  ###
         self.n_layers = 3
         self.pop_size = 2           ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
-        self.n_gen = 2              ##################
+        if len(argv)>1 and int(argv[1]) > 0:
+            self.n_gen = int(argv[1])
+        else:
+            self.n_gen = 2
         self.termination = ('n_gen', self.n_gen)
 
 
@@ -96,13 +111,6 @@ class Config():
         }
         self.xgboost_n_round = 10
 
-
-        ### Test settings ###
-        self.save_model = True
-        self.log_stats = True
-        self.best_model = None
-        self.verbose = False
-
         ### Global values/settings ###
         self.kl_divergence_function = (lambda q, p, _:
             tfp.distributions.kl_divergence(q, p)
@@ -116,9 +124,11 @@ class Config():
             self.layers_indexes[i] = idx
             idx = idx+i+1
 
-        now = datetime.now()
-        self.time = now.strftime("%Y%m%d_%H%M%S")
-
+        if self.load_time_str == "":
+            now = datetime.now()
+            self.time = now.strftime("%Y%m%d_%H%M%S")
+        else:
+            self.time = self.load_time_str
 
         ### Time benchmarks ###
         self.blueprint_time = []

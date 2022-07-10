@@ -3,9 +3,8 @@ import numpy as np
 from pymoo.core.problem import Problem
 
 from blueprint import Blueprint
-from misc import get_params_number
-
-from test import log_stats, save_model
+import misc
+import test 
 
 class EVProblem(Problem):
     def __init__(self, config):
@@ -29,7 +28,7 @@ class EVProblem(Problem):
             performance = blueprint_object.evaluate_model()
 
             objs[i, 0] = 1 - performance
-            objs[i, 1] = get_params_number(model)
+            objs[i, 1] = misc.get_params_number(model)
 
             if performance > best_perf:
                 best_perf = performance
@@ -45,5 +44,5 @@ class EVProblem(Problem):
 
 def do_every_generations(algorithm):
     
-    if algorithm.problem.config.log_stats: log_stats(algorithm)
-    if algorithm.problem.config.save_model: save_model(algorithm)
+    if algorithm.problem.config.log_stats: test.log_stats(algorithm)
+    if algorithm.problem.config.save_model: test.save_model(algorithm)

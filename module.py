@@ -1,11 +1,11 @@
 import tensorflow as tf
 import numpy as np
-from misc import genome_convert, get_params_dict
+import misc
 
 class Module():
 	def __init__(self, genome, config, layer_type, input_layer):
 		self.layer_type = layer_type
-		self.module_graph = genome_convert(genome, layers_indexes=config.layers_indexes)
+		self.module_graph = misc.genome_convert(genome, layers_indexes=config.layers_indexes)
 		
 		self.process_graph(input_layer, config)
 
@@ -14,7 +14,7 @@ class Module():
 		layer = input_layer
 		layers[0] = layer
 
-		params_dict = get_params_dict(config, self.layer_type)
+		params_dict = misc.get_params_dict(config, self.layer_type)
 		layer_object = self.layer_type(params_dict)   
 
 		for idx, gene in enumerate(self.module_graph, start=1):
