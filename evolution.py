@@ -6,6 +6,8 @@ from blueprint import Blueprint
 import misc
 import test 
 
+
+
 class EVProblem(Problem):
     def __init__(self, config):
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6

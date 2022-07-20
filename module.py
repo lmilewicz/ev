@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 import misc
 
+
+
 class Module():
 	def __init__(self, genome, config, layer_type, input_layer):
 		self.layer_type = layer_type

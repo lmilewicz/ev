@@ -10,6 +10,7 @@ from tensorflow.keras.models import model_from_json
 import misc
 
 
+
 def log_stats(algorithm):
     gen = algorithm.n_gen
     pop_obj = algorithm.pop.get('F')

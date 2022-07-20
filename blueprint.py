@@ -14,6 +14,8 @@ import numpy as np
 from module import Module
 import node
 
+
+
 class Blueprint():
     def __init__(self, genome, config) -> tf.keras.Model:
         self.model = None

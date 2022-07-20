@@ -4,6 +4,7 @@ import tensorflow as tf
 import node
 
 
+
 def genome_convert(genome, layers_indexes):
     #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
@@ -21,12 +22,9 @@ def get_params_dict(config, layer_type):
 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
 	return params_dict
 
-
-def new_genome_convert(genome, layers_indexes):
-    #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
-    return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
-
-
+# def new_genome_convert(genome, layers_indexes):
+#     #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
+#     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
 
 
 def remove_disconnected_layers(X, config):
@@ -59,7 +57,63 @@ def remove_disconnected_layers(X, config):
                 _X[i, index_1:index_2] = gene_copy
 
     return _X
-    
+
+
+class NewRemoveDisconnectedLayers():
+    def __init__(self, X, config) -> None:
+        self._X = np.zeros(X.shape, dtype=np.int)
+        self.X = X
+        self.config = config
+
+        self.main()
+
+
+    def main(self):
+        for i in range(self.X.shape[0]):
+            self.process_module(i,\
+                start_idx=0,\
+                n_modules=self.config.n_conv_modules,\
+                n_layers=self.config.n_conv_layers,\
+                module_genome_len=self.config.conv_module_genome_len,\
+                layers_indexes=self.config.conv_layers_indexes)
+
+            self.process_module(i,\
+                start_idx=self.config.n_conv_modules*self.config.conv_module_genome_len,\
+                n_modules=self.config.n_ann_modules,\
+                n_layers=self.config.n_ann_layers,\
+                module_genome_len=self.config.ann_module_genome_len,\
+                layers_indexes=self.config.ann_layers_indexes)
+
+
+    def process_module(self, i, start_idx, n_modules, n_layers, module_genome_len, layers_indexes):
+        for j in range(n_modules):
+            activated_layers_array = np.zeros(n_layers)
+            activated_layers_array[0] = 1
+
+            genome_start = module_genome_len*j + start_idx
+            genome_end = module_genome_len*(j+1) + start_idx
+                
+            genome_module = self.X[i, genome_start:genome_end]
+            genome_graph = genome_convert(genome_module, layers_indexes)
+            for idx, gene in enumerate(genome_graph, start=1):
+                gene_copy = gene.copy()
+                gene_copy.resize(n_layers)
+
+                gene_copy = np.multiply(gene_copy, activated_layers_array)
+                if sum(gene_copy) > 0:
+                    activated_layers_array[idx] = 1  
+                
+                index_1 = layers_indexes[idx-1] + genome_start
+                index_2 = layers_indexes[idx] + genome_start
+
+                gene_copy2 = gene_copy[0:len(gene)].astype(np.int)
+                self._X[i, index_1:index_2] = gene_copy2
+
+
+    def return_new_X(self):
+        return self._X
+
+
 
 def get_flops(model):
     ''' Returns GFLOPS value needed to process neural network model
