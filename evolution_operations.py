@@ -19,6 +19,9 @@ class SamplingAll(Sampling):
             _X = (_X > 0.5).astype(np.int)
 
         # return remove_disconnected_layers(val, problem.config)
+        print("xd")
+        print(_X)
+        print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 class SamplingFromSmall(Sampling):
@@ -51,6 +54,9 @@ class MutationAll(Mutation):
         else:
             _X = no_xgboost_mutation(X, self.prob)
 
+        print("xd2")
+        print(_X)
+        print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
         # return remove_disconnected_layers(_X, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 

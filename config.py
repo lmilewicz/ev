@@ -74,9 +74,9 @@ class Config():
         ### Evolution settings  ###
         self.n_conv_layers = 3
         self.n_ann_layers = 3
-        self.n_layers = 3
+        self.n_obj = 2
 
-        self.pop_size = 2           ##################
+        self.pop_size = 1           ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -93,8 +93,6 @@ class Config():
         self.n_modules = self.n_conv_modules+self.n_ann_modules
         self.conv_module_genome_len = int(self.n_conv_layers*(self.n_conv_layers-1)*0.5)
         self.ann_module_genome_len = int(self.n_ann_layers*(self.n_ann_layers-1)*0.5)
-
-        self.module_genome_len = int(self.n_layers*(self.n_layers-1)*0.5)
 
         self.conv_genome_len = self.conv_module_genome_len*self.n_conv_modules
         self.ann_genome_len = self.ann_module_genome_len*self.n_ann_modules + 1 # +1 for output bit
@@ -128,8 +126,6 @@ class Config():
             / tf.cast(self.dataset_size, dtype=self.dtype))
         
         self.debug = False
-
-        self.layers_indexes = get_layers_indexes(self.n_layers)
 
         self.conv_layers_indexes = get_layers_indexes(self.n_conv_layers)
         self.ann_layers_indexes = get_layers_indexes(self.n_ann_layers)

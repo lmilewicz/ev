@@ -99,7 +99,14 @@ class NewRemoveDisconnectedLayers():
                 gene_copy = gene.copy()
                 gene_copy.resize(n_layers)
 
+                print(idx, "xd3")
+                print(gene_copy)
+                print(activated_layers_array)
+
                 gene_copy = np.multiply(gene_copy, activated_layers_array)
+                print(gene_copy)
+
+
                 if sum(gene_copy) > 0:
                     activated_layers_array[idx] = 1  
                 

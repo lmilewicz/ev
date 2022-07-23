@@ -35,14 +35,20 @@ class Blueprint():
 
         last_layer = input
         
+        module_genome_len = config.conv_module_genome_len
+        layers_indexes=config.conv_layers_indexes
+
         for i in range(config.n_modules):
             if i == config.n_conv_modules:
                 last_layer = node.MaxPool2D()(last_layer)
                 last_layer = tf.keras.layers.Flatten()(last_layer)
                 layer_type = node.DenseLayer
+                module_genome_len = config.ann_module_genome_len
+                layers_indexes=config.ann_layers_indexes
 
-            genome_module = genome[config.module_genome_len*i:config.module_genome_len*(i+1)]
-            module = Module(genome_module, config, layer_type, input_layer = last_layer)
+
+            genome_module = genome[module_genome_len*i:module_genome_len*(i+1)]
+            module = Module(genome_module, config, layer_type, layers_indexes, input_layer = last_layer)
 
             last_layer = module.get_module()
 

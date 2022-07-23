@@ -11,7 +11,7 @@ import test
 class EVProblem(Problem):
     def __init__(self, config):
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
-        super().__init__(n_var=config.genome_len, n_obj=config.pop_size, 
+        super().__init__(n_var=config.genome_len, n_obj=config.n_obj, 
             n_constr=config.n_constr, type_var=np.int)
 
         self.config = config
