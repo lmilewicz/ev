@@ -5,9 +5,21 @@ import node
 
 
 
-def genome_convert(genome, layers_indexes):
-    #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
+def module_convert(genome, layers_indexes):
+    #   Converts module into blueprint. E.g. 4 layers module: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
+
+
+def genome_convert(genome, module_layers_indexes):
+    #   Converts genome into blueprint
+    genome_converted = []
+    module_start = 0
+    for i, layers_indexes in enumerate(module_layers_indexes):
+        genome_converted.append(module_convert(genome[module_start:module_start+layers_indexes[-1]].tolist(), layers_indexes))
+        module_start = module_start + layers_indexes[-1]
+    
+    genome_converted.append(genome[-1])
+    return genome_converted
 
 
 def get_params_dict(config, layer_type):
@@ -22,12 +34,8 @@ def get_params_dict(config, layer_type):
 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
 	return params_dict
 
-# def new_genome_convert(genome, layers_indexes):
-#     #   Converts genome into blueprint. E.g. 4 layers genome: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
-#     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
 
-
-def remove_disconnected_layers(X, config):
+def old_remove_disconnected_layers(X, config):
     _X = np.zeros(X.shape, dtype=np.int)
 
     for i in range(X.shape[0]):
@@ -40,7 +48,7 @@ def remove_disconnected_layers(X, config):
             genome_module = X[i, genome_start:genome_end]
             layers[genome_start] = 1
 
-            genome_graph = genome_convert(genome_module, layers_indexes=config.layers_indexes)
+            genome_graph = module_convert(genome_module, layers_indexes=config.layers_indexes)
             for idx, gene in enumerate(genome_graph, start=1):
                 layer = 0
                 gene_copy = gene.copy()
@@ -94,7 +102,7 @@ class NewRemoveDisconnectedLayers():
             genome_end = module_genome_len*(j+1) + start_idx
                 
             genome_module = self.X[i, genome_start:genome_end]
-            genome_graph = genome_convert(genome_module, layers_indexes)
+            genome_graph = module_convert(genome_module, layers_indexes)
             for idx, gene in enumerate(genome_graph, start=1):
                 gene_copy = gene.copy()
                 gene_copy.resize(n_layers)
@@ -147,6 +155,7 @@ def get_params_number(model):
     return totalParams* 1e-9
 
 
+
 # def remove_disconnected_layers(X, config):
 #     _X = np.zeros(X.shape, dtype=np.int)
 
@@ -154,7 +163,7 @@ def get_params_number(model):
 #         layers = np.zeros(config.n_layers, dtype=np.int)
 #         layers[0] = 1
 
-#         genome_graph = genome_convert(X[i, :], layers_indexes=config.layers_indexes)
+#         genome_graph = module_convert(X[i, :], layers_indexes=config.layers_indexes)
 #         for idx, gene in enumerate(genome_graph, start=1):
 #             layer = 0
 #             gene_copy = gene.copy()

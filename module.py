@@ -7,7 +7,7 @@ import misc
 class Module():
 	def __init__(self, genome, config, layer_type, layers_indexes, input_layer):
 		self.layer_type = layer_type
-		self.module_graph = misc.genome_convert(genome, layers_indexes)
+		self.module_graph = misc.module_convert(genome, layers_indexes)
 		self.process_graph(input_layer, config)
 
 	def process_graph(self, input_layer, config):

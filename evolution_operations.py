@@ -3,7 +3,7 @@ import numpy as np
 from pymoo.core.sampling import Sampling
 from pymoo.core.mutation import Mutation
 
-from misc import remove_disconnected_layers, NewRemoveDisconnectedLayers
+from misc import NewRemoveDisconnectedLayers
 
 
 

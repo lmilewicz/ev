@@ -18,7 +18,7 @@ def log_stats(algorithm):
     config = algorithm.problem.config
 
     best_index = np.argmin(pop_obj[:, 0])
-    best_genome = misc.genome_convert(X[best_index, :], config.conv_layers_indexes)
+    best_genome = misc.genome_convert(X[best_index, :], [config.conv_layers_indexes, config.ann_layers_indexes])
 
     if config.verbose:
         print('Gen = {}'.format(gen))
