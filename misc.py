@@ -147,6 +147,7 @@ def get_flops(model):
         flops = tf.compat.v1.profiler.profile(graph=graph, run_meta=run_meta, cmd='op', options=opts)
         return flops.total_float_ops* 1e-9
 
+
 def get_params_number(model):
     trainableParams = np.sum([np.prod(v.get_shape()) for v in model.trainable_weights])
     nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in model.non_trainable_weights])
@@ -155,6 +156,20 @@ def get_params_number(model):
     return totalParams* 1e-9
 
 
+def get_graph(module):
+    graph = {}
+    graph[1] = []
+
+    module_len = len(module)
+    for i in range(module_len):
+        if i < module_len-1 and len(module[i]) >= len(module[i+1]):
+            module_len = module_len - 1 
+            break 
+
+    for i in range(module_len):
+        graph[i + 2] = [j + 1 for j in range(len(module[i])) if module[i][j] == 1]
+
+    return graph
 
 # def remove_disconnected_layers(X, config):
 #     _X = np.zeros(X.shape, dtype=np.int)

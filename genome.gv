@@ -1,51 +1,82 @@
 digraph {
-	graph [size="12,12"]
-	node [align=left fontsize=12 height=0.2 ranksep=0.1 shape=box style=filled]
-	rankdir=UD
+	graph [label="Best Genome" rankdir=LR]
+	node [style=filled]
 	input [label=Input]
-	gene_0_node_0 [label=" " fillcolor=white shape=doublecircle]
+	input -> module_0_node_1
+	subgraph cluster_0 {
+		color=black label=""
+	}
+	subgraph cluster_0 {
+		color=black label=""
+		module_0_node_2 [label=2 fillcolor=lightblue shape=circle]
+		module_0_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_0_node_1 -> module_0_node_2
+	}
+	subgraph cluster_0 {
+		color=black label=""
+	}
+	subgraph cluster_0 {
+		color=black label=""
+		module_0_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_0_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_0_node_1 -> module_0_node_4
+		module_0_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_0_node_2 [label=2 fillcolor=lightblue shape=circle]
+		module_0_node_2 -> module_0_node_4
+	}
+	module_0_node_4 -> module_1_node_1
 	subgraph cluster_1 {
-		fillcolor=gray fontcolor=black label="" style=filled
-		gene_0_node_2 [label=" " fillcolor=lightblue shape=circle]
-		gene_0_node_3 [label=" " fillcolor=lightblue shape=circle]
+		color=black label=""
 	}
-	gene_0_node_4 [label=" " fillcolor=green4 shape=circle]
-	gene_0_pool [label=Pooling fillcolor=orange]
-	gene_0_node_1 -> gene_0_node_2
-	gene_0_node_1 -> gene_0_node_3
-	gene_0_node_2 -> gene_0_node_3
-	gene_0_node_4 -> gene_0_pool
-	gene_1_node_0 [label=" " fillcolor=white shape=doublecircle]
-	gene_0_pool -> gene_1_node_0
+	subgraph cluster_1 {
+		color=black label=""
+	}
+	subgraph cluster_1 {
+		color=black label=""
+		module_1_node_3 [label=3 fillcolor=lightblue shape=circle]
+		module_1_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_1_node_1 -> module_1_node_3
+	}
+	subgraph cluster_1 {
+		color=black label=""
+		module_1_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_1_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_1_node_1 -> module_1_node_4
+		module_1_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_1_node_3 [label=3 fillcolor=lightblue shape=circle]
+		module_1_node_3 -> module_1_node_4
+	}
+	module_1_node_4 -> module_2_node_1
 	subgraph cluster_2 {
-		fillcolor=gray fontcolor=black label="" style=filled
-		gene_1_node_2 [label=" " fillcolor=lightblue shape=circle]
-		gene_1_node_3 [label=" " fillcolor=lightblue shape=circle]
+		color=black label=""
 	}
-	gene_1_node_4 [label=" " fillcolor=green4 shape=circle]
-	gene_1_pool [label=Pooling fillcolor=orange]
-	gene_1_node_1 -> gene_1_node_2
-	gene_1_node_1 -> gene_1_node_3
-	gene_1_node_2 -> gene_1_node_3
-	gene_1_node_4 -> gene_1_pool
-	gene_2_node_0 [label=" " fillcolor=white shape=doublecircle]
-	gene_1_pool -> gene_2_node_0
-	subgraph cluster_3 {
-		fillcolor=gray fontcolor=black label="" style=filled
-		gene_2_node_2 [label=" " fillcolor=lightblue shape=circle]
-		gene_2_node_3 [label=" " fillcolor=lightblue shape=circle]
-		gene_2_node_4 [label=" " fillcolor=lightblue shape=circle]
+	subgraph cluster_2 {
+		color=black label=""
+		module_2_node_2 [label=2 fillcolor=lightblue shape=circle]
+		module_2_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_2_node_1 -> module_2_node_2
 	}
-	gene_2_node_5 [label=" " fillcolor=green4 shape=circle]
-	gene_2_pool [label="Avg. Pooling" fillcolor=orange]
-	gene_2_node_1 -> gene_2_node_2
-	gene_2_node_1 -> gene_2_node_3
-	gene_2_node_2 -> gene_2_node_3
-	gene_2_node_1 -> gene_2_node_4
-	gene_2_node_2 -> gene_2_node_4
-	gene_2_node_3 -> gene_2_node_4
-	gene_2_node_5 -> gene_2_pool
-	input -> gene_0_node_0
-	linear [label=Linear fillcolor=gray]
-	gene_2_pool -> linear
+	subgraph cluster_2 {
+		color=black label=""
+		module_2_node_3 [label=3 fillcolor=lightblue shape=circle]
+		module_2_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_2_node_1 -> module_2_node_3
+		module_2_node_3 [label=3 fillcolor=lightblue shape=circle]
+		module_2_node_2 [label=2 fillcolor=lightblue shape=circle]
+		module_2_node_2 -> module_2_node_3
+	}
+	subgraph cluster_2 {
+		color=black label=""
+		module_2_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_2_node_1 [label=1 fillcolor=lightblue shape=circle]
+		module_2_node_1 -> module_2_node_4
+		module_2_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_2_node_2 [label=2 fillcolor=lightblue shape=circle]
+		module_2_node_2 -> module_2_node_4
+		module_2_node_4 [label=4 fillcolor=lightblue shape=circle]
+		module_2_node_3 [label=3 fillcolor=lightblue shape=circle]
+		module_2_node_3 -> module_2_node_4
+	}
+	output [label=Output]
+	module_2_node_4 -> output
 }
