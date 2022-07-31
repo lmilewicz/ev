@@ -40,7 +40,6 @@ def visualize_genome_main(genome, config, gen=0):
 
         if i < len(genome)-1: dot.edge(output_str, 'module_'+str(i+1)+'_node_1')
 
-
     dot.node('output', 'Output')
     dot.edge(output_str, 'output')
     dot.render()
