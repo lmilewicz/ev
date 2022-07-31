@@ -6,7 +6,6 @@ import tensorflow_probability as tfp
 from config import Config
 
 
-
 class Node(object, metaclass=ABCMeta):
     def __init__(self, params_dict):
             if 'units' in params_dict: self.units = params_dict['units']

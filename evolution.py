@@ -5,8 +5,7 @@ from pymoo.core.problem import Problem
 from blueprint import Blueprint
 import misc
 import test 
-
-
+import visualization
 
 class EVProblem(Problem):
     def __init__(self, config):
@@ -44,7 +43,8 @@ class EVProblem(Problem):
 
         out['F'] = objs
 
+
 def do_every_generations(algorithm):
-    
     if algorithm.problem.config.log_stats: test.log_stats(algorithm)
     if algorithm.problem.config.save_model: test.save_model(algorithm)
+    if algorithm.problem.config.save_graph_visualization: visualization.visualize_genome(algorithm)

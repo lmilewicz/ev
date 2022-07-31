@@ -42,7 +42,7 @@ import test
 
 
 class Config():
-    def __init__(self, argv):
+    def __init__(self, argv=[]):
         ### Model settings      ###
         self.dataset = 'mnist' # 'mnist' 'cifar10'
         self.enable_xgboost = False
@@ -56,11 +56,14 @@ class Config():
         ### Test settings ###
         self.save_model = True
         self.log_stats = True
-        self.best_model = None
         self.verbose = False
+        self.save_graph_visualization = True
+
+        ### Global test values ###
+        self.best_model = None
 
         ### Saved files ###
-        self.path_dir = "model_json"
+        self.global_dir = "model_json"
         self.genomes_path = "genomes_gen_"
         self.best_model_path = "bestmodel_gen_"
         self.algorithm_path = "algorithm_last_state"
@@ -69,6 +72,14 @@ class Config():
         [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = [0, None, None, ""]
         if len(argv)>1 and int(argv[1]) > 0:
             [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = test.load_saved_state(self)
+
+        if self.load_time_str == "":
+            now = datetime.now()
+            self.time = now.strftime("%Y%m%d_%H%M%S")
+        else:
+            self.time = self.load_time_str
+        self.path_dir = self.global_dir+"/"+str(self.time)
+
 
 
         ### Evolution settings  ###
@@ -130,11 +141,6 @@ class Config():
         self.conv_layers_indexes = get_layers_indexes(self.n_conv_layers)
         self.ann_layers_indexes = get_layers_indexes(self.n_ann_layers)
 
-        if self.load_time_str == "":
-            now = datetime.now()
-            self.time = now.strftime("%Y%m%d_%H%M%S")
-        else:
-            self.time = self.load_time_str
 
         ### Time benchmarks ###
         self.blueprint_time = []
