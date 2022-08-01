@@ -54,10 +54,9 @@ class Config():
         self.out_units = ds_info.features['label'].num_classes
 
         ### Test settings ###
-        self.save_model = True
-        self.log_stats = True
+        self.save_model = self.log_stats = self.save_graph_visualization = True
         self.verbose = False
-        self.save_graph_visualization = True
+        self.debug = False
 
         ### Global test values ###
         self.best_model = None
@@ -136,8 +135,6 @@ class Config():
             tfp.distributions.kl_divergence(q, p)
             / tf.cast(self.dataset_size, dtype=self.dtype))
         
-        self.debug = False
-
         self.conv_layers_indexes = get_layers_indexes(self.n_conv_layers)
         self.ann_layers_indexes = get_layers_indexes(self.n_ann_layers)
 

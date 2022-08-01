@@ -136,7 +136,7 @@ def get_graph(module):
     for i in range(module_len):
         graph[i + 2] = [j + 1 for j in range(len(module[i])) if module[i][j] == 1]
     
-    graph['concat'] = [out for (out, input) in graph.items() if any(i==1 for i in input)]
+    graph[module_len+2] = [out for (out, input) in graph.items() if any(i==1 for i in input)]
 
     return graph
 
