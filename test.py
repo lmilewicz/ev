@@ -1,14 +1,10 @@
-from time import time
 import numpy as np
 from statistics import mean
-import codecs, json 
-import os
-import time
+import codecs, json, os, time
 from datetime import datetime
 from tensorflow.keras.models import model_from_json
 
 import misc
-
 
 
 def log_stats(algorithm):

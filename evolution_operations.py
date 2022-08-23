@@ -6,7 +6,6 @@ from pymoo.core.mutation import Mutation
 from misc import NewRemoveDisconnectedLayers
 
 
-
 class SamplingAll(Sampling):
     def __init__(self) -> None:
         super().__init__()
@@ -54,9 +53,9 @@ class MutationAll(Mutation):
         else:
             _X = no_xgboost_mutation(X, self.prob)
 
-        print("xd2")
-        print(_X)
-        print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
+        # print("xd2")
+        # print(_X)
+        # print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
         # return remove_disconnected_layers(_X, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
@@ -98,6 +97,50 @@ class MutationFromSmall(Mutation):
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
+
+
+class NewMutationFromSmall(Mutation):
+    def __init__(self, prob=None):
+        super().__init__()
+        self.prob = prob
+
+    def _do(self, problem, X, **kwargs):
+        if self.prob is None:
+            self.prob = 1.0 / problem.n_var
+        
+        _X = np.full(X.shape, 0)
+
+        if(add_module()): 
+            if(ann): module = module + 1
+            else: module = module + 1
+        if(remove_module()): module = module + 1
+        if(add_maxlayer()): module = module + 1
+        if(remove_maxlayer()): module = module + 1
+
+        # return remove_disconnected_layers(_X, problem.config)
+        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
+
+    def calculate_range(config, active_cnn_modules, active_ann_modules):
+        A = np.full(X.shape, 0).astype(bool)
+
+        return A
+
+    def add_module():
+        prob = 0.1
+        return [True]
+
+    def remove_module():
+        prob = 0.1
+        return [True]
+
+    def add_maxlayer():
+        prob = 0.1
+        return [True]
+
+    def remove_maxlayer():
+        prob = 0.1
+        return [True]
 
 def xgboost_mutation(X, prob):
     X_without_output = X[:,:-1].copy().astype(np.bool)

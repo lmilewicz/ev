@@ -4,7 +4,6 @@ import tensorflow as tf
 import node
 
 
-
 def module_convert(genome, layers_indexes):
     #   Converts module into blueprint. E.g. 4 layers module: [1, 0, 1, 1, 1, 1] -> [[1], [0, 1], [1, 1, 1]]
     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
@@ -33,38 +32,6 @@ def get_params_dict(config, layer_type):
 	else:
 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
 	return params_dict
-
-
-def old_remove_disconnected_layers(X, config):
-    _X = np.zeros(X.shape, dtype=np.int)
-
-    for i in range(X.shape[0]):
-        layers = np.zeros(config.n_layers*config.n_modules, dtype=np.int)
-
-        for j in range(config.n_modules):
-            genome_start = config.module_genome_len*j
-            genome_end = config.module_genome_len*(j+1)
-            
-            genome_module = X[i, genome_start:genome_end]
-            layers[genome_start] = 1
-
-            genome_graph = module_convert(genome_module, layers_indexes=config.layers_indexes)
-            for idx, gene in enumerate(genome_graph, start=1):
-                layer = 0
-                gene_copy = gene.copy()
-                if np.count_nonzero(gene) > 0:
-                    for j in np.nonzero(gene)[0]:
-                        if(layers[j] == 0): 
-                            gene_copy[j] = 0
-                        else:
-                            layer = 1
-                layers[idx] = layer
-
-                index_1 = config.layers_indexes[idx-1] + genome_start
-                index_2 = config.layers_indexes[idx] + genome_start
-                _X[i, index_1:index_2] = gene_copy
-
-    return _X
 
 
 class NewRemoveDisconnectedLayers():
@@ -171,26 +138,35 @@ def get_graph(module):
 
     return graph
 
-# def remove_disconnected_layers(X, config):
+
+# def old_remove_disconnected_layers(X, config):
 #     _X = np.zeros(X.shape, dtype=np.int)
 
 #     for i in range(X.shape[0]):
-#         layers = np.zeros(config.n_layers, dtype=np.int)
-#         layers[0] = 1
+#         layers = np.zeros(config.n_layers*config.n_modules, dtype=np.int)
 
-#         genome_graph = module_convert(X[i, :], layers_indexes=config.layers_indexes)
-#         for idx, gene in enumerate(genome_graph, start=1):
-#             layer = 0
-#             gene_copy = gene.copy()
-#             if np.count_nonzero(gene) > 0:
-#                 for j in np.nonzero(gene)[0]:
-#                     if(layers[j] == 0): 
-#                         gene_copy[j] = 0
-#                     else:
-#                         layer = 1
-#             layers[idx] = layer
+#         for j in range(config.n_modules):
+#             genome_start = config.module_genome_len*j
+#             genome_end = config.module_genome_len*(j+1)
+            
+#             genome_module = X[i, genome_start:genome_end]
+#             layers[genome_start] = 1
 
-#             _X[i, config.layers_indexes[idx-1]:config.layers_indexes[idx]] = gene_copy
+#             genome_graph = module_convert(genome_module, layers_indexes=config.layers_indexes)
+#             for idx, gene in enumerate(genome_graph, start=1):
+#                 layer = 0
+#                 gene_copy = gene.copy()
+#                 if np.count_nonzero(gene) > 0:
+#                     for j in np.nonzero(gene)[0]:
+#                         if(layers[j] == 0): 
+#                             gene_copy[j] = 0
+#                         else:
+#                             layer = 1
+#                 layers[idx] = layer
+
+#                 index_1 = config.layers_indexes[idx-1] + genome_start
+#                 index_2 = config.layers_indexes[idx] + genome_start
+#                 _X[i, index_1:index_2] = gene_copy
 
 #     return _X
 

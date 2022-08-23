@@ -2,8 +2,9 @@ from graphviz import Digraph
 
 from misc import get_graph
 
+
 def visualize_genome(genome, title=None):
-    dot = Digraph(format='pdf', filename='genome.gv', node_attr={'style':'filled'}, graph_attr={'rankdir':'LR', 'label':title})
+    dot = Digraph(format='pdf', filename='genome2.gv', node_attr={'style':'filled'}, graph_attr={'rankdir':'LR', 'label':title})
 
     input_str = 'input'
     output_str = 'input'
@@ -30,7 +31,7 @@ def visualize_genome(genome, title=None):
     dot.node('output', 'Output')
     dot.edge(output_str, 'output')
 
-    dot.view()
+    #dot.view()
 
     return dot
 

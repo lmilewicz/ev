@@ -40,7 +40,6 @@ from data_loader import DataLoader
 import test
 
 
-
 class Config():
     def __init__(self, argv):
         ### Model settings      ###

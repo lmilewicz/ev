@@ -2,7 +2,6 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 
 
-
 class DataLoader():
     # 'cifar10'   'mnist'
     def __new__(self, dataset, batch_size):
