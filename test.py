@@ -9,12 +9,12 @@ import misc
 
 def log_stats(algorithm):
     gen = algorithm.n_gen
-    pop_obj = algorithm.pop.get('F')
-    X = algorithm.pop.get('X')
     config = algorithm.problem.config
 
+    pop_obj = algorithm.pop.get('F')
+    X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
-    best_genome = misc.genome_convert(X[best_index, :], [config.conv_layers_indexes, config.ann_layers_indexes])
+    best_genome = misc.get_best_genome(algorithm, config)
 
     if config.verbose:
         print('Gen = {}'.format(gen))
@@ -51,12 +51,10 @@ def save_model(algorithm):
     X = algorithm.pop.get('X')
     gen = algorithm.n_gen+config.load_gen
 
-    path_file = config.path_dir+"/"+str(config.time)
-    if not os.path.exists(path_file):
-        os.mkdir(path_file)
+    if not os.path.exists(config.path_dir): os.mkdir(config.path_dir)
 
-    genomes_file_path = path_file+"/"+config.genomes_path+str(gen)+".json"
-    bestmodel_file_path = path_file+"/"+config.best_model_path+str(gen)
+    genomes_file_path = config.path_dir+"/"+config.genomes_path+str(gen)+".json"
+    bestmodel_file_path = config.path_dir+"/"+config.best_model_path+str(gen)
 
     # if os.path.isfile(genomes_file_path) is False: genomes_file = []
     # else:
@@ -74,13 +72,13 @@ def save_model(algorithm):
     config.best_model.save_weights(bestmodel_file_path+".h5")
 
 
-    if not algorithm.problem.config.log_stats: print('Generation = {} saved!'.format(gen))
+    if not config.log_stats: print('Generation = {} saved!'.format(gen))
 
 
 def load_saved_state(config, time_str="", gen=0):
     if time_str == "":
         last_time = datetime.fromtimestamp(0)
-        for _, dirs, _ in os.walk(config.path_dir):
+        for _, dirs, _ in os.walk(config.global_dir):
             for dir in dirs:
                 date_time_obj = datetime.strptime(dir, '%Y%m%d_%H%M%S')
                 if date_time_obj > last_time:
@@ -88,7 +86,7 @@ def load_saved_state(config, time_str="", gen=0):
                     last_time = date_time_obj
 
     if gen == 0:
-        for _, _, files in os.walk(config.path_dir+"/"+time_str):
+        for _, _, files in os.walk(config.path_dir):
             for file in files: 
                 if "gen" in file:
                     number = ""
@@ -97,8 +95,8 @@ def load_saved_state(config, time_str="", gen=0):
                         if m == ".": break
                     if int(number) > gen: gen = int(number)
 
-    genomes_file_path = config.path_dir+"/"+time_str+"/"+config.genomes_path+str(gen)+".json"
-    bestmodel_file_path = config.path_dir+"/"+time_str+"/"+config.best_model_path+str(gen)
+    genomes_file_path = config.path_dir+"/"+config.genomes_path+str(gen)+".json"
+    bestmodel_file_path = config.path_dir+"/"+config.best_model_path+str(gen)
 
     if os.path.isfile(genomes_file_path) is False: genomes = []
     else:

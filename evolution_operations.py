@@ -18,9 +18,9 @@ class SamplingAll(Sampling):
             _X = (_X > 0.5).astype(np.int)
 
         # return remove_disconnected_layers(val, problem.config)
-        print("xd")
-        print(_X)
-        print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
+        # print("xd")
+        # print(_X)
+        # print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 class SamplingFromSmall(Sampling):
