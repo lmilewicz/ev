@@ -45,12 +45,9 @@ def visualize_genome_main(genome, config, gen=0):
 
     dot.node('output', 'Output')
     dot.edge(output_str, 'output')
-<<<<<<< HEAD
 
     #dot.view()
-=======
     dot.render()
->>>>>>> 8df8591e2819ef3d2163f92dcf17553e33e09001
 
     return dot
 
@@ -72,9 +69,6 @@ def add_graph_connection(output_str, i, output, inputs, dot, concat=False):
 if __name__ == "__main__":
     genome = [[[1], [0, 0], [1, 1, 0]], [[0], [1, 0], [1, 0, 1]], [[1], [1, 1], [1, 1, 1], [0]]]
 
-<<<<<<< HEAD
-    visualize_genome(genome, 'Best Genome')
-=======
-    dot = visualize_genome_main(genome, Config())
+    dot = visualize_genome(genome, 'Best Genome')
+    # dot = visualize_genome_main(genome, Config())
     dot.view()
->>>>>>> 8df8591e2819ef3d2163f92dcf17553e33e09001
