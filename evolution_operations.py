@@ -3,7 +3,7 @@ import numpy as np
 from pymoo.core.sampling import Sampling
 from pymoo.core.mutation import Mutation
 
-from misc import NewRemoveDisconnectedLayers
+from misc import RemoveDisconnectedLayers
 
 
 class SamplingAll(Sampling):
@@ -17,7 +17,8 @@ class SamplingAll(Sampling):
             _X = np.random.random((n_samples, problem.n_var))
             _X = (_X > 0.5).astype(np.int)
 
-        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
 
 class SamplingFromSmall(Sampling):
     def __init__(self) -> None:
@@ -28,10 +29,12 @@ class SamplingFromSmall(Sampling):
             _X = np.array(problem.config.load_genomes.copy())
         else:
             _X = np.zeros((n_samples, problem.n_var))
-            _X[:,0] = np.random.random(n_samples)
+            R = calculate_range(_X.shape, problem.config)
+            _X[R] = np.random.random(n_samples)
+
             _X = (_X > 0.5).astype(np.int)
 
-        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
 class MutationAll(Mutation):
@@ -48,7 +51,8 @@ class MutationAll(Mutation):
         else:
             _X = no_xgboost_mutation(X, self.prob)
 
-        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
 
 
 class MutationFromSmall(Mutation):
@@ -61,66 +65,9 @@ class MutationFromSmall(Mutation):
             self.prob = 1.0 / problem.n_var
         
         _X = np.full(X.shape, 0)
-
-        for j in range(X.shape[0]):
-            break_loop = 0
-            for i in range(len(problem.config.layers_indexes)-1):
-                start = problem.config.layers_indexes[i]
-                end = problem.config.layers_indexes[i+1]
-                X_layer = X[j, start:end].copy()
-                _X_layer = X[j, start:end].copy()
-                if(np.sum(X_layer))==0:
-                    _X_layer[end-start-1] = (1 if np.random.random() > self.prob else 0)
-                    break_loop = 1
-                else:
-                    M = np.random.random(X_layer.shape)
-                    flip, no_flip = M < self.prob, M >= self.prob
-                    _X_layer[flip] = np.logical_not(X_layer[flip]).astype(np.int)
-                    _X_layer[no_flip] = X_layer[no_flip].astype(np.int)
-                    if(np.sum(X_layer)==0):
-                        break_loop=1
-                        _X[j, end:X.shape[1]] = np.zeros(X.shape[1]-end)
-                _X[j, start:end] = _X_layer
-
-                if(break_loop): break
-
-        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
-
-
-class NewMutationFromSmall(Mutation):
-    def __init__(self, prob=None):
-        super().__init__()
-        self.prob = prob
-
-    def _do(self, problem, X, **kwargs):
-        if self.prob is None:
-            self.prob = 1.0 / problem.n_var
-        
-        _X = np.full(X.shape, 0)
         config = problem.config
 
-        random = np.random.random(8)
-        #CNN
-        if(random_mutation(random[0], 0.02) and config.algo_n_conv_modules < config.n_conv_modules): 
-            config.algo_n_conv_modules = config.algo_n_conv_modules + 1
-        elif(random_mutation(random[1], 0.02) and config.algo_n_conv_modules> 0): 
-            config.algo_n_conv_modules = config.algo_n_conv_modules - 1
-        if(random_mutation(random[2], 0.1) and config.algo_n_conv_layers < config.n_conv_layers): 
-            config.algo_n_conv_layers = config.algo_n_conv_layers + 1
-        elif(random_mutation(random[3], 0.1) and config.algo_n_conv_layers > 0): 
-            config.algo_n_conv_layers = config.algo_n_conv_layers - 1
-
-        #ANN
-        if(random_mutation(random[4], 0.02) and config.algo_n_ann_modules < config.n_ann_modules): 
-            config.algo_n_ann_modules = config.algo_n_ann_modules + 1
-        elif(random_mutation(random[5], 0.02) and config.algo_n_ann_modules > 0): 
-            config.algo_n_ann_modules = config.algo_n_ann_modules - 1
-        if(random_mutation(random[6], 0.1) and config.algo_n_ann_layers < config.n_ann_layers): 
-            config.algo_n_ann_layers = config.algo_n_ann_layers + 1
-        elif(random_mutation(random[7], 0.1) and config.algo_n_ann_layers > 0): 
-            config.algo_n_ann_layers = config.algo_n_ann_layers - 1
-
-        R = calculate_range(X.shape, config)
+        R = update_range(X.shape, config)
 
         if self.prob is None:
             self.prob = 1.0 / problem.n_var
@@ -131,7 +78,34 @@ class NewMutationFromSmall(Mutation):
             _X = no_xgboost_mutation(X, R, self.prob)
 
         # return remove_disconnected_layers(_X, problem.config)
-        return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
+
+def update_range(shape, config):
+    random = np.random.random(8)
+    #CNN
+    if(random_mutation(random[0], 0.02) and config.algo_n_conv_modules < config.n_conv_modules): 
+        config.algo_n_conv_modules = config.algo_n_conv_modules + 1
+    elif(random_mutation(random[1], 0.02) and config.algo_n_conv_modules> 0): 
+        config.algo_n_conv_modules = config.algo_n_conv_modules - 1
+    if(random_mutation(random[2], 0.1) and config.algo_n_conv_layers < config.n_conv_layers): 
+        config.algo_n_conv_layers = config.algo_n_conv_layers + 1
+    elif(random_mutation(random[3], 0.1) and config.algo_n_conv_layers > 0): 
+        config.algo_n_conv_layers = config.algo_n_conv_layers - 1
+
+    #ANN
+    if(random_mutation(random[4], 0.02) and config.algo_n_ann_modules < config.n_ann_modules): 
+        config.algo_n_ann_modules = config.algo_n_ann_modules + 1
+    elif(random_mutation(random[5], 0.02) and config.algo_n_ann_modules > 0): 
+        config.algo_n_ann_modules = config.algo_n_ann_modules - 1
+    if(random_mutation(random[6], 0.1) and config.algo_n_ann_layers < config.n_ann_layers): 
+        config.algo_n_ann_layers = config.algo_n_ann_layers + 1
+    elif(random_mutation(random[7], 0.1) and config.algo_n_ann_layers > 0): 
+        config.algo_n_ann_layers = config.algo_n_ann_layers - 1
+
+    R = calculate_range(shape, config)
+
+    return R
 
 
 def calculate_range(shape, config):
@@ -168,6 +142,7 @@ def xgboost_mutation(X, R, prob):
 
     _X[flip] = np.logical_not(X_without_output[flip])
     _X[no_flip] = X_without_output[no_flip]
+    _X[~R] = False
 
     _X = _X.astype(np.int)
 
@@ -209,7 +184,7 @@ np.set_printoptions(threshold=sys.maxsize)
 
 if __name__ == '__main__':
 
-    mutation = NewMutationFromSmall()
+    mutation = MutationFromSmall()
     config = Config()
     problem = evolution.EVProblem(config)
     X = np.full((3, config.genome_len), 1)
@@ -217,3 +192,57 @@ if __name__ == '__main__':
     print(X)
     print(mutation._do(problem, X))
 
+
+
+
+
+
+# class SamplingFromSmall(Sampling):
+#     # def __init__(self) -> None:
+#     #     super().__init__()
+        
+#     # def _do(self, problem, n_samples, **kwargs):
+#     #     if problem.config.load_genomes != None:
+#     #         _X = np.array(problem.config.load_genomes.copy())
+#     #     else:
+#     #         _X = np.zeros((n_samples, problem.n_var))
+#     #         _X[:,0] = np.random.random(n_samples)
+#     #         _X = (_X > 0.5).astype(np.int)
+
+#     #     return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
+
+# class MutationFromSmall(Mutation):
+#     def __init__(self, prob=None):
+#         super().__init__()
+#         self.prob = prob
+
+#     def _do(self, problem, X, **kwargs):
+#         if self.prob is None:
+#             self.prob = 1.0 / problem.n_var
+        
+#         _X = np.full(X.shape, 0)
+
+#         for j in range(X.shape[0]):
+#             break_loop = 0
+#             for i in range(len(problem.config.layers_indexes)-1):
+#                 start = problem.config.layers_indexes[i]
+#                 end = problem.config.layers_indexes[i+1]
+#                 X_layer = X[j, start:end].copy()
+#                 _X_layer = X[j, start:end].copy()
+#                 if(np.sum(X_layer))==0:
+#                     _X_layer[end-start-1] = (1 if np.random.random() > self.prob else 0)
+#                     break_loop = 1
+#                 else:
+#                     M = np.random.random(X_layer.shape)
+#                     flip, no_flip = M < self.prob, M >= self.prob
+#                     _X_layer[flip] = np.logical_not(X_layer[flip]).astype(np.int)
+#                     _X_layer[no_flip] = X_layer[no_flip].astype(np.int)
+#                     if(np.sum(X_layer)==0):
+#                         break_loop=1
+#                         _X[j, end:X.shape[1]] = np.zeros(X.shape[1]-end)
+#                 _X[j, start:end] = _X_layer
+
+#                 if(break_loop): break
+
+#         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()

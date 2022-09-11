@@ -34,7 +34,7 @@ def get_params_dict(config, layer_type):
 	return params_dict
 
 
-class NewRemoveDisconnectedLayers():
+class RemoveDisconnectedLayers():
     def __init__(self, X, config) -> None:
         self._X = np.zeros(X.shape, dtype=np.int)
         self.X = X
