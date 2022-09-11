@@ -43,7 +43,7 @@ import test
 class Config():
     def __init__(self, argv=[]):
         ### Model settings      ###
-        self.dataset = 'mnist' # 'mnist' 'cifar10'
+        self.dataset = 'cifar10' # 'mnist' 'cifar10'
         self.enable_xgboost = False
         self.batch_size = 128
 
