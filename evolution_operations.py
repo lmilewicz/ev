@@ -17,10 +17,6 @@ class SamplingAll(Sampling):
             _X = np.random.random((n_samples, problem.n_var))
             _X = (_X > 0.5).astype(np.int)
 
-        # return remove_disconnected_layers(val, problem.config)
-        # print("xd")
-        # print(_X)
-        # print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 class SamplingFromSmall(Sampling):
@@ -35,7 +31,6 @@ class SamplingFromSmall(Sampling):
             _X[:,0] = np.random.random(n_samples)
             _X = (_X > 0.5).astype(np.int)
 
-        # return remove_disconnected_layers(val, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
@@ -53,10 +48,6 @@ class MutationAll(Mutation):
         else:
             _X = no_xgboost_mutation(X, self.prob)
 
-        # print("xd2")
-        # print(_X)
-        # print(NewRemoveDisconnectedLayers(_X, problem.config).return_new_X())
-        # return remove_disconnected_layers(_X, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
@@ -93,10 +84,7 @@ class MutationFromSmall(Mutation):
 
                 if(break_loop): break
 
-        # return remove_disconnected_layers(_X, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
-
-
 
 
 class NewMutationFromSmall(Mutation):
@@ -109,47 +97,74 @@ class NewMutationFromSmall(Mutation):
             self.prob = 1.0 / problem.n_var
         
         _X = np.full(X.shape, 0)
+        config = problem.config
 
-        if(add_module()): 
-            if(ann): module = module + 1
-            else: module = module + 1
-        if(remove_module()): module = module + 1
-        if(add_maxlayer()): module = module + 1
-        if(remove_maxlayer()): module = module + 1
+        random = np.random.random(8)
+        #CNN
+        if(random_mutation(random[0], 0.02) and config.algo_n_conv_modules < config.n_conv_modules): 
+            config.algo_n_conv_modules = config.algo_n_conv_modules + 1
+        elif(random_mutation(random[1], 0.02) and config.algo_n_conv_modules> 0): 
+            config.algo_n_conv_modules = config.algo_n_conv_modules - 1
+        if(random_mutation(random[2], 0.1) and config.algo_n_conv_layers < config.n_conv_layers): 
+            config.algo_n_conv_layers = config.algo_n_conv_layers + 1
+        elif(random_mutation(random[3], 0.1) and config.algo_n_conv_layers > 0): 
+            config.algo_n_conv_layers = config.algo_n_conv_layers - 1
+
+        #ANN
+        if(random_mutation(random[4], 0.02) and config.algo_n_ann_modules < config.n_ann_modules): 
+            config.algo_n_ann_modules = config.algo_n_ann_modules + 1
+        elif(random_mutation(random[5], 0.02) and config.algo_n_ann_modules > 0): 
+            config.algo_n_ann_modules = config.algo_n_ann_modules - 1
+        if(random_mutation(random[6], 0.1) and config.algo_n_ann_layers < config.n_ann_layers): 
+            config.algo_n_ann_layers = config.algo_n_ann_layers + 1
+        elif(random_mutation(random[7], 0.1) and config.algo_n_ann_layers > 0): 
+            config.algo_n_ann_layers = config.algo_n_ann_layers - 1
+
+        R = calculate_range(X.shape, config)
+
+        if self.prob is None:
+            self.prob = 1.0 / problem.n_var
+
+        if problem.config.enable_xgboost:
+            _X = xgboost_mutation(X, R, self.prob)
+        else:
+            _X = no_xgboost_mutation(X, R, self.prob)
 
         # return remove_disconnected_layers(_X, problem.config)
         return NewRemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
-    def calculate_range(config, active_cnn_modules, active_ann_modules):
-        A = np.full(X.shape, 0).astype(bool)
+def calculate_range(shape, config):
+    A = np.full(shape, False)
+    conv_module_len = int(config.algo_n_conv_layers*(config.algo_n_conv_layers-1)*0.5)
+    max_conv_module_len = int(config.n_conv_layers*(config.n_conv_layers-1)*0.5)
+    ann_module_len = int(config.algo_n_ann_layers*(config.algo_n_ann_layers-1)*0.5)
+    max_ann_module_len = int(config.n_ann_layers*(config.n_ann_layers-1)*0.5)
 
-        return A
+    start_array = 0
+    for i in range(config.n_conv_modules):
+        if i < config.algo_n_conv_modules: A[:, start_array:conv_module_len+start_array] = True
+        start_array = start_array + max_conv_module_len
 
-    def add_module():
-        prob = 0.1
-        return [True]
+    for i in range(config.n_ann_layers):
+        if i < config.algo_n_ann_layers: A[:, start_array:ann_module_len+start_array] = True
+        start_array = start_array + max_ann_module_len
 
-    def remove_module():
-        prob = 0.1
-        return [True]
+    return A
 
-    def add_maxlayer():
-        prob = 0.1
-        return [True]
 
-    def remove_maxlayer():
-        prob = 0.1
-        return [True]
+def random_mutation(dice, prob=0.1):
+    return dice > 1-prob
 
-def xgboost_mutation(X, prob):
-    X_without_output = X[:,:-1].copy().astype(np.bool)
+
+def xgboost_mutation(X, R, prob):
+    X_without_output = X[:,:-1].copy().astype(bool)
     X_output = X[:,-1].copy()
 
     _X = np.full(X_without_output.shape, np.inf)
 
     M = np.random.random(X_without_output.shape)
-    flip, no_flip = M < prob, M >= prob
+    flip, no_flip = M < prob and R, M >= prob or R
 
     _X[flip] = np.logical_not(X_without_output[flip])
     _X[no_flip] = X_without_output[no_flip]
@@ -168,7 +183,8 @@ def xgboost_mutation(X, prob):
     _X = np.append(_X, X_output, axis=1)
 
 
-def no_xgboost_mutation(X, prob):
+
+def no_xgboost_mutation(X, R, prob):
     X = X.astype(np.bool)
     _X = np.full(X.shape, np.inf)
 
@@ -177,6 +193,27 @@ def no_xgboost_mutation(X, prob):
 
     _X[flip] = np.logical_not(X[flip])
     _X[no_flip] = X[no_flip]
+    _X[~R] = False
+
     _X = _X.astype(np.int)
 
     return _X
+
+
+import evolution
+from config import Config
+
+import sys
+np.set_printoptions(threshold=sys.maxsize)
+
+
+if __name__ == '__main__':
+
+    mutation = NewMutationFromSmall()
+    config = Config()
+    problem = evolution.EVProblem(config)
+    X = np.full((3, config.genome_len), 1)
+
+    print(X)
+    print(mutation._do(problem, X))
+
