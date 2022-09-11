@@ -45,7 +45,7 @@ class Config():
         ### Model settings      ###
         self.dataset = 'cifar10' # 'mnist' 'cifar10'
         self.enable_xgboost = False
-        self.batch_size = 128
+        self.batch_size = 32
 
         self.ds_train, self.ds_test, ds_info = DataLoader(self.dataset, self.batch_size)
         self.dataset_size = ds_info.splits['train'].num_examples
@@ -77,15 +77,18 @@ class Config():
         else:
             self.time = self.load_time_str
         self.path_dir = self.global_dir+"/"+str(self.time)
-
-
+        
 
         ### Evolution settings  ###
-        self.n_conv_layers = 3
+        self.n_conv_layers = 5
         self.n_ann_layers = 3
-        self.n_obj = 2
 
-        self.pop_size = 1           ##################
+        self.algo_n_conv_layers = 2
+        self.algo_n_ann_layers = 2
+
+        self.number_of_objectives = 2
+        # self.pop_size = 10           ##################
+        self.pop_size = 2           ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -96,8 +99,11 @@ class Config():
 
 
         ### Genome settings     ###
-        self.n_conv_modules = 1
+        self.n_conv_modules = 3
         self.n_ann_modules = 1
+
+        self.algo_n_conv_modules = 1
+        self.algo_n_ann_modules = 1
 
         self.n_modules = self.n_conv_modules+self.n_ann_modules
         self.conv_module_genome_len = int(self.n_conv_layers*(self.n_conv_layers-1)*0.5)
@@ -108,8 +114,8 @@ class Config():
         self.genome_len = self.conv_genome_len + self.ann_genome_len
 
         ### ANN settings        ###
-        self.learning_rate = 0.001
-        self.n_epochs = 1           ##################
+        self.learning_rate = 0.01
+        self.n_epochs = 20           ##################
         self.out_activation = 'softmax'
 
         self.units = 16             ## To optimize

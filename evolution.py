@@ -11,7 +11,7 @@ import visualization
 class EVProblem(Problem):
     def __init__(self, config):
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
-        super().__init__(n_var=config.genome_len, n_obj=config.n_obj, 
+        super().__init__(n_var=config.genome_len, n_obj=config.number_of_objectives, 
             n_constr=config.n_constr, type_var=np.int)
 
         self.config = config
@@ -22,9 +22,17 @@ class EVProblem(Problem):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
         best_perf = 0
 
+        # ############################
+        # x = np.full((x.shape), 1)
+        # ############################
+
+
         best_model = None
         for i in range(x.shape[0]):
-            # x[i, -1] = 2
+            # ############################
+            # x[i, -1] = 0
+            # ############################
+            
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
             performance = blueprint_object.evaluate_model()
@@ -35,6 +43,8 @@ class EVProblem(Problem):
             if performance > best_perf:
                 best_perf = performance
                 best_model = model
+
+        print(x)
 
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))

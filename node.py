@@ -44,16 +44,16 @@ class Convolution2D(Node):
     def create_node(self) -> tf.keras.layers.Layer:                                      
         if self.prob_layer:
             config = Config()
-            return tfp.layers.Convolution2DFlipout(filters=1, 
-                                    kernel_size=self.kernel_size, 
-                                    padding='same', 
-                                    activation=self.activation, 
-                                    kernel_divergence_fn=config.kl_divergence_function,
-                                    dtype=self.dtype)
-        return tf.keras.layers.Conv2D(filters=1, 
+            return tfp.layers.Convolution2DFlipout(filters=32,
                                     kernel_size=self.kernel_size,
                                     padding='same',
-                                    activation=self.activation, 
+                                    activation=self.activation,
+                                    kernel_divergence_fn=config.kl_divergence_function,
+                                    dtype=self.dtype)
+        return tf.keras.layers.Conv2D(filters=32,
+                                    kernel_size=self.kernel_size,
+                                    padding='same',
+                                    activation=self.activation,
                                     dtype=self.dtype)
 
 

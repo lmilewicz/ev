@@ -85,6 +85,13 @@ def load_saved_state(config, time_str="", gen=0):
                     time_str = dir
                     last_time = date_time_obj
 
+    if time_str == "":
+        now = datetime.now()
+        config.time = now.strftime("%Y%m%d_%H%M%S")
+    else:
+        config.time = time_str
+    config.path_dir = config.global_dir+"/"+str(config.time)
+
     if gen == 0:
         for _, _, files in os.walk(config.path_dir):
             for file in files: 
