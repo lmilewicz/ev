@@ -33,8 +33,8 @@ def main():
     problem = evolution.EVProblem(config)
 
     algorithm = NSGA2(pop_size=config.pop_size,
-                sampling=evolution_operations.SamplingAll(),
-                mutation=evolution_operations.MutationAll(),
+                sampling=evolution_operations.SamplingFromSmall(),
+                mutation=evolution_operations.MutationFromSmall(),
                 eliminate_duplicates=True)
 
     # if config.algorithm == 'NSGA2': # https://pymoo.org/algorithms/moo/nsga2.html

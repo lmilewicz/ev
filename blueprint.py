@@ -124,6 +124,7 @@ class Blueprint():
 
         self.config.performance_time.append(time.time()-time2)
 
+        print("Performance for model: %.3f", 1-performance)
         return performance
 
 

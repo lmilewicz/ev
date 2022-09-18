@@ -30,8 +30,8 @@ class SamplingFromSmall(Sampling):
         else:
             _X = np.zeros((n_samples, problem.n_var))
             R = calculate_range(_X.shape, problem.config)
-            _X[R] = np.random.random(n_samples)
-
+            _X = np.random.random((n_samples, problem.n_var))
+            _X[~R] = 0
             _X = (_X > 0.5).astype(np.int)
 
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()

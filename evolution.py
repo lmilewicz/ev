@@ -44,7 +44,7 @@ class EVProblem(Problem):
                 best_perf = performance
                 best_model = model
 
-        print(x)
+        # print(x)
 
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))

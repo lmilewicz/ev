@@ -15,10 +15,9 @@ Issues comments:
 - Improve mutation/sampling with different output layers        ### done --> in MutationAll
 
 Testing:
-- save genomes/models/testing state after specified number of generations/time spend
-- stop testing and save testing state with an input key
-- enable testing from saved point
-- set-up jupyter board for online improvements
+- save genomes/models/testing state after specified number of generations/time spend  ### done
+- stop testing and save testing state with an input key         ### NOT done
+- enable testing from saved point                               ### done
 
 
 2)
@@ -87,8 +86,8 @@ class Config():
         self.algo_n_ann_layers = 2
 
         self.number_of_objectives = 2
-        # self.pop_size = 10           ##################
-        self.pop_size = 2           ##################
+        #self.pop_size = 10            ##################
+        self.pop_size = 2               ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -114,7 +113,7 @@ class Config():
         self.genome_len = self.conv_genome_len + self.ann_genome_len
 
         ### ANN settings        ###
-        self.learning_rate = 0.01
+        self.learning_rate = 0.02
         self.n_epochs = 20           ##################
         self.out_activation = 'softmax'
 
