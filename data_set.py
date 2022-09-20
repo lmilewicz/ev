@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 
 
-class DataLoader():
+class DataSet():
     # 'cifar10'   'mnist'
     def __new__(self, dataset, batch_size):
         (ds_train, ds_test), ds_info = tfds.load(

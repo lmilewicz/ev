@@ -35,7 +35,7 @@ import tensorflow as tf
 from datetime import datetime
 import time
 
-from data_loader import DataLoader
+from data_set import DataSet
 import test
 
 
@@ -46,7 +46,7 @@ class Config():
         self.enable_xgboost = False
         self.batch_size = 32
 
-        self.ds_train, self.ds_test, ds_info = DataLoader(self.dataset, self.batch_size)
+        self.ds_train, self.ds_test, ds_info = DataSet(self.dataset, self.batch_size)
         self.dataset_size = ds_info.splits['train'].num_examples
         self.input_shape = ds_info.features['image'].shape
         self.out_units = ds_info.features['label'].num_classes
