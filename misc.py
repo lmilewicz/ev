@@ -47,15 +47,15 @@ class RemoveDisconnectedLayers():
         for i in range(self.X.shape[0]):
             self.process_module(i,\
                 start_idx=0,\
-                n_modules=self.config.n_conv_modules,\
-                n_layers=self.config.n_conv_layers,\
+                n_modules=self.config.max_n_conv_modules,\
+                n_layers=self.config.max_n_conv_layers,\
                 module_genome_len=self.config.conv_module_genome_len,\
                 layers_indexes=self.config.conv_layers_indexes)
 
             self.process_module(i,\
-                start_idx=self.config.n_conv_modules*self.config.conv_module_genome_len,\
-                n_modules=self.config.n_ann_modules,\
-                n_layers=self.config.n_ann_layers,\
+                start_idx=self.config.max_n_conv_modules*self.config.conv_module_genome_len,\
+                n_modules=self.config.max_n_ann_modules,\
+                n_layers=self.config.max_n_ann_layers,\
                 module_genome_len=self.config.ann_module_genome_len,\
                 layers_indexes=self.config.ann_layers_indexes)
 
@@ -153,9 +153,9 @@ def get_best_genome(algorithm, config):
 #     _X = np.zeros(X.shape, dtype=np.int)
 
 #     for i in range(X.shape[0]):
-#         layers = np.zeros(config.n_layers*config.n_modules, dtype=np.int)
+#         layers = np.zeros(config.n_layers*config.max_n_modules, dtype=np.int)
 
-#         for j in range(config.n_modules):
+#         for j in range(config.max_n_modules):
 #             genome_start = config.module_genome_len*j
 #             genome_end = config.module_genome_len*(j+1)
             
@@ -185,9 +185,9 @@ def get_best_genome(algorithm, config):
 #     _X = np.zeros(X.shape, dtype=np.int)
 
 #     for i in range(X.shape[0]):
-#         layers = np.zeros(config.n_layers*config.n_modules, dtype=np.int)
+#         layers = np.zeros(config.n_layers*config.max_n_modules, dtype=np.int)
 
-#         for j in range(config.n_modules):
+#         for j in range(config.max_n_modules):
 #             genome_start = config.module_genome_len*j
 #             genome_end = config.module_genome_len*(j+1)
             

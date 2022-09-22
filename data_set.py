@@ -3,7 +3,7 @@ import tensorflow_datasets as tfds
 
 
 class DataSet():
-    # 'cifar10'   'mnist' 'cifar10_corrupted' 'cifar100'
+    # 'mnist' 'cifar10' 'cifar10_corrupted' 'cifar100'
     def __new__(self, dataset, batch_size):
         (ds_train, ds_test), ds_info = tfds.load(
             dataset,

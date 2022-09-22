@@ -37,8 +37,8 @@ class Blueprint():
         module_genome_len = config.conv_module_genome_len
         layers_indexes=config.conv_layers_indexes
 
-        for i in range(config.n_modules):
-            if i == config.n_conv_modules:
+        for i in range(config.max_n_modules):
+            if i == config.max_n_conv_modules:
                 last_layer = node.MaxPool2D()(last_layer)
                 last_layer = tf.keras.layers.Flatten()(last_layer)
                 layer_type = node.DenseLayer

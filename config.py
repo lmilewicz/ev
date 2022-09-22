@@ -49,11 +49,11 @@ class Config():
         
 
         ### Evolution settings  ###
-        self.n_conv_layers = 5
-        self.n_ann_layers = 3
+        self.max_n_conv_layers = 5
+        self.max_n_ann_layers = 3
 
-        self.algo_n_conv_layers = 2
-        self.algo_n_ann_layers = 2
+        self.n_conv_layers = 2
+        self.n_ann_layers = 2
 
         self.number_of_objectives = 2
         #self.pop_size = 10            ##################
@@ -68,18 +68,20 @@ class Config():
 
 
         ### Genome settings     ###
-        self.n_conv_modules = 3
+        self.max_n_conv_modules = 3
+        self.max_n_ann_modules = 1
+
+        self.n_conv_modules = 1
         self.n_ann_modules = 1
 
-        self.algo_n_conv_modules = 1
-        self.algo_n_ann_modules = 1
-
+        self.max_n_modules = self.max_n_conv_modules+self.max_n_ann_modules
         self.n_modules = self.n_conv_modules+self.n_ann_modules
-        self.conv_module_genome_len = int(self.n_conv_layers*(self.n_conv_layers-1)*0.5)
-        self.ann_module_genome_len = int(self.n_ann_layers*(self.n_ann_layers-1)*0.5)
 
-        self.conv_genome_len = self.conv_module_genome_len*self.n_conv_modules
-        self.ann_genome_len = self.ann_module_genome_len*self.n_ann_modules + 1 # +1 for output bit
+        self.conv_module_genome_len = int(self.max_n_conv_layers*(self.max_n_conv_layers-1)*0.5)
+        self.ann_module_genome_len = int(self.max_n_ann_layers*(self.max_n_ann_layers-1)*0.5)
+
+        self.conv_genome_len = self.conv_module_genome_len*self.max_n_conv_modules
+        self.ann_genome_len = self.ann_module_genome_len*self.max_n_ann_modules + 1 # +1 for output bit
         self.genome_len = self.conv_genome_len + self.ann_genome_len
 
         ### ANN settings        ###
@@ -109,8 +111,8 @@ class Config():
             tfp.distributions.kl_divergence(q, p)
             / tf.cast(self.dataset_size, dtype=self.dtype))
         
-        self.conv_layers_indexes = get_layers_indexes(self.n_conv_layers)
-        self.ann_layers_indexes = get_layers_indexes(self.n_ann_layers)
+        self.conv_layers_indexes = get_layers_indexes(self.max_n_conv_layers)
+        self.ann_layers_indexes = get_layers_indexes(self.max_n_ann_layers)
 
 
         ### Time benchmarks ###

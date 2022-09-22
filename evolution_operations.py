@@ -54,7 +54,6 @@ class MutationAll(Mutation):
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
-
 class MutationFromSmall(Mutation):
     def __init__(self, prob=None):
         super().__init__()
@@ -81,27 +80,53 @@ class MutationFromSmall(Mutation):
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
+def perform_mutations(X, config):
+
+    dice = np.random.random()
+    if dice < 0.5:
+        # Topology
+        X = topology_mutation(X)
+
+    elif dice < 0.9:
+        module = np.random.randint(config.n_modules, 1)
+        if dice < 0.7:
+            # Neurons number
+            X[-3] = np.random.randint(7, 1)
+        else:
+            # Activation function
+            X[-3] = np.random.randint(3, 1)
+
+    else:
+        # Output layer
+        X[-1] = np.random.randint(3, 1)
+
+
+def topology_mutation(X):
+    x = 1
+
+
+
 def update_range(shape, config):
     random = np.random.random(8)
     #CNN
-    if(random_mutation(random[0], 0.02) and config.algo_n_conv_modules < config.n_conv_modules): 
-        config.algo_n_conv_modules = config.algo_n_conv_modules + 1
-    elif(random_mutation(random[1], 0.02) and config.algo_n_conv_modules> 0): 
-        config.algo_n_conv_modules = config.algo_n_conv_modules - 1
-    if(random_mutation(random[2], 0.1) and config.algo_n_conv_layers < config.n_conv_layers): 
-        config.algo_n_conv_layers = config.algo_n_conv_layers + 1
-    elif(random_mutation(random[3], 0.1) and config.algo_n_conv_layers > 0): 
-        config.algo_n_conv_layers = config.algo_n_conv_layers - 1
+    if(random_mutation(random[0], 0.02) and config.n_conv_modules < config.max_n_conv_modules): 
+        config.n_conv_modules = config.n_conv_modules + 1
+    elif(random_mutation(random[1], 0.02) and config.n_conv_modules> 0): 
+        config.n_conv_modules = config.n_conv_modules - 1
+    if(random_mutation(random[2], 0.1) and config.n_conv_layers < config.max_n_conv_layers): 
+        config.n_conv_layers = config.n_conv_layers + 1
+    elif(random_mutation(random[3], 0.1) and config.n_conv_layers > 0): 
+        config.n_conv_layers = config.n_conv_layers - 1
 
     #ANN
-    if(random_mutation(random[4], 0.02) and config.algo_n_ann_modules < config.n_ann_modules): 
-        config.algo_n_ann_modules = config.algo_n_ann_modules + 1
-    elif(random_mutation(random[5], 0.02) and config.algo_n_ann_modules > 0): 
-        config.algo_n_ann_modules = config.algo_n_ann_modules - 1
-    if(random_mutation(random[6], 0.1) and config.algo_n_ann_layers < config.n_ann_layers): 
-        config.algo_n_ann_layers = config.algo_n_ann_layers + 1
-    elif(random_mutation(random[7], 0.1) and config.algo_n_ann_layers > 0): 
-        config.algo_n_ann_layers = config.algo_n_ann_layers - 1
+    if(random_mutation(random[4], 0.02) and config.n_ann_modules < config.max_n_ann_modules): 
+        config.n_ann_modules = config.n_ann_modules + 1
+    elif(random_mutation(random[5], 0.02) and config.n_ann_modules > 0): 
+        config.n_ann_modules = config.n_ann_modules - 1
+    if(random_mutation(random[6], 0.1) and config.n_ann_layers < config.max_n_ann_layers): 
+        config.n_ann_layers = config.n_ann_layers + 1
+    elif(random_mutation(random[7], 0.1) and config.n_ann_layers > 0): 
+        config.n_ann_layers = config.n_ann_layers - 1
 
     R = calculate_range(shape, config)
 
@@ -110,18 +135,18 @@ def update_range(shape, config):
 
 def calculate_range(shape, config):
     A = np.full(shape, False)
-    conv_module_len = int(config.algo_n_conv_layers*(config.algo_n_conv_layers-1)*0.5)
-    max_conv_module_len = int(config.n_conv_layers*(config.n_conv_layers-1)*0.5)
-    ann_module_len = int(config.algo_n_ann_layers*(config.algo_n_ann_layers-1)*0.5)
-    max_ann_module_len = int(config.n_ann_layers*(config.n_ann_layers-1)*0.5)
+    conv_module_len = int(config.n_conv_layers*(config.n_conv_layers-1)*0.5)
+    max_conv_module_len = int(config.max_n_conv_layers*(config.max_n_conv_layers-1)*0.5)
+    ann_module_len = int(config.n_ann_layers*(config.n_ann_layers-1)*0.5)
+    max_ann_module_len = int(config.max_n_ann_layers*(config.max_n_ann_layers-1)*0.5)
 
     start_array = 0
-    for i in range(config.n_conv_modules):
-        if i < config.algo_n_conv_modules: A[:, start_array:conv_module_len+start_array] = True
+    for i in range(config.max_n_conv_modules):
+        if i < config.n_conv_modules: A[:, start_array:conv_module_len+start_array] = True
         start_array = start_array + max_conv_module_len
 
-    for i in range(config.n_ann_layers):
-        if i < config.algo_n_ann_layers: A[:, start_array:ann_module_len+start_array] = True
+    for i in range(config.max_n_ann_layers):
+        if i < config.n_ann_layers: A[:, start_array:ann_module_len+start_array] = True
         start_array = start_array + max_ann_module_len
 
     return A
