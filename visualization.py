@@ -4,9 +4,6 @@ from misc import get_graph, get_best_genome
 from config import Config
 
 
-# def visualize_genome(genome, title=None):
-#     dot = Digraph(format='pdf', filename='genome2.gv', node_attr={'style':'filled'}, graph_attr={'rankdir':'LR', 'label':title})
-
 def visualize_genome(algorithm):
     config = algorithm.problem.config
     genome = get_best_genome(algorithm, config)
@@ -71,5 +68,4 @@ if __name__ == "__main__":
     genome = [[[1], [0, 0], [1, 1, 0]], [[0], [1, 0], [1, 0, 1]], [[1], [1, 1], [1, 1, 1], [0]]]
 
     dot = visualize_genome(genome, 'Best Genome')
-    # dot = visualize_genome_main(genome, Config())
     dot.view()

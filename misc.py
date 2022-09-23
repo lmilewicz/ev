@@ -77,14 +77,7 @@ class RemoveDisconnectedLayers():
             for idx, gene in enumerate(genome_graph, start=1):
                 gene_copy = gene.copy()
                 gene_copy.resize(n_layers)
-
-                # print(idx, "xd3")
-                # print(gene_copy)
-                # print(activated_layers_array)
-
                 gene_copy = np.multiply(gene_copy, activated_layers_array)
-                # print(gene_copy)
-
 
                 if sum(gene_copy) > 0:
                     activated_layers_array[idx] = 1  
@@ -152,99 +145,4 @@ def get_best_genome(algorithm, config):
     best_genome = genome_convert(X[best_index, :], config)
     return best_genome
 
-
-# def get_params_dict(config, layer_type):
-# 	params_dict = {'activation':	config.activation,
-# 					'dtype':		tf.float32,
-# 					'prob_layer':	False}
-# 	if layer_type == node.DenseLayer:
-# 		params_dict['units'] = config.units
-# 	elif layer_type == node.Convolution2D:
-# 		params_dict['kernel_size'] = config.kernel_size
-# 	else:
-# 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
-# 	return params_dict
-
-
-# def old_remove_disconnected_layers(X, config):
-#     _X = np.zeros(X.shape, dtype=np.int)
-
-#     for i in range(X.shape[0]):
-#         layers = np.zeros(config.n_layers*config.max_n_modules, dtype=np.int)
-
-#         for j in range(config.max_n_modules):
-#             genome_start = config.module_genome_len*j
-#             genome_end = config.module_genome_len*(j+1)
-            
-#             genome_module = X[i, genome_start:genome_end]
-#             layers[genome_start] = 1
-
-#             genome_graph = module_convert(genome_module, layers_indexes=config.layers_indexes)
-#             for idx, gene in enumerate(genome_graph, start=1):
-#                 layer = 0
-#                 gene_copy = gene.copy()
-#                 if np.count_nonzero(gene) > 0:
-#                     for j in np.nonzero(gene)[0]:
-#                         if(layers[j] == 0): 
-#                             gene_copy[j] = 0
-#                         else:
-#                             layer = 1
-#                 layers[idx] = layer
-
-#                 index_1 = config.layers_indexes[idx-1] + genome_start
-#                 index_2 = config.layers_indexes[idx] + genome_start
-#                 _X[i, index_1:index_2] = gene_copy
-
-#     return _X
-
-
-# def remove_disconnected_layers(X, config):
-#     _X = np.zeros(X.shape, dtype=np.int)
-
-#     for i in range(X.shape[0]):
-#         layers = np.zeros(config.n_layers*config.max_n_modules, dtype=np.int)
-
-#         for j in range(config.max_n_modules):
-#             genome_start = config.module_genome_len*j
-#             genome_end = config.module_genome_len*(j+1)
-            
-#             genome_module = X[i, genome_start:genome_end]
-#             layers[genome_start] = 1
-
-#             genome_graph = module_convert(genome_module, layers_indexes=config.layers_indexes)
-#             for idx, gene in enumerate(genome_graph, start=1):
-#                 layer = 0
-#                 gene_copy = gene.copy()
-#                 if np.count_nonzero(gene) > 0:
-#                     for j in np.nonzero(gene)[0]:
-#                         if(layers[j] == 0): 
-#                             gene_copy[j] = 0
-#                         else:
-#                             layer = 1
-#                 layers[idx] = layer
-
-#                 index_1 = config.layers_indexes[idx-1] + genome_start
-#                 index_2 = config.layers_indexes[idx] + genome_start
-#                 _X[i, index_1:index_2] = gene_copy
-
-#     return _X
-
-
-
-# def get_flops(model):
-#     ''' Returns GFLOPS value needed to process neural network model
-#     '''
-#     batch_size = 1
-#     inputs = [tf.TensorSpec([batch_size] + inp.shape[1:], inp.dtype) for inp in model.inputs]
-#     real_model = tf.function(model).get_concrete_function(inputs)
-#     frozen_func, _ = convert_variables_to_constants_v2_as_graph(real_model)
-
-#     run_meta = tf.compat.v1.RunMetadata()
-#     opts = tf.compat.v1.profiler.ProfileOptionBuilder.float_operation()
-#     opts['output'] = 'none'
-
-#     flops = tf.compat.v1.profiler.profile(
-#         graph=frozen_func.graph, run_meta=run_meta, cmd='scope', options=opts
-#     )
-#     return float(flops.total_float_ops) * 1e-9
 

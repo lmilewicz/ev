@@ -56,11 +56,6 @@ def save_model(algorithm):
     genomes_file_path = config.path_dir+"/"+config.genomes_path+str(gen)+".json"
     bestmodel_file_path = config.path_dir+"/"+config.best_model_path+str(gen)
 
-    # if os.path.isfile(genomes_file_path) is False: genomes_file = []
-    # else:
-    #     with open(genomes_file_path) as fp: genomes_file = json.load(fp)
-
-    # genomes_file.append(X.tolist())
     json.dump(X.tolist(), codecs.open(genomes_file_path, 'w', encoding='utf-8'), 
             separators=(',', ':'), 
             sort_keys=True, 
@@ -70,7 +65,6 @@ def save_model(algorithm):
     with open(bestmodel_file_path+".json", "w") as fp2:
         fp2.write(best_model_json)
     config.best_model.save_weights(bestmodel_file_path+".h5")
-
 
     if not config.log_stats: print('Generation = {} saved!'.format(gen))
 

@@ -22,16 +22,9 @@ class EVProblem(Problem):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
         best_perf = 0
 
-        # ############################
-        # x = np.full((x.shape), 1)
-        # ############################
-
 
         best_model = None
         for i in range(x.shape[0]):
-            # ############################
-            # x[i, -1] = 0
-            # ############################
             
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
             model = blueprint_object.get_model()
@@ -43,8 +36,6 @@ class EVProblem(Problem):
             if performance > best_perf:
                 best_perf = performance
                 best_model = model
-
-        # print(x)
 
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))
