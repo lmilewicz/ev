@@ -9,14 +9,19 @@ def module_convert(genome, layers_indexes):
     return [genome[layers_indexes[i]:layers_indexes[i+1]] for i in range(len(layers_indexes)-1)]
 
 
-def genome_convert(genome, module_layers_indexes):
+def genome_convert(genome, config):
     #   Converts genome into blueprint
     genome_converted = []
     module_start = 0
-    for layers_indexes in module_layers_indexes:
+    for layers_indexes in [config.conv_layers_indexes, config.ann_layers_indexes]:
         genome_converted.append(module_convert(genome[module_start:module_start+layers_indexes[-1]].tolist(), layers_indexes))
         module_start = module_start + layers_indexes[-1]
-    genome_converted[-1].append([genome[-1]])
+    
+    index = config.topology_len
+    for _ in range(config.max_n_modules):
+        genome_converted.append([genome[index], genome[index+1]])
+        index = index +2
+    genome_converted.append([genome[index]])
 
     return genome_converted
 
@@ -146,7 +151,7 @@ def get_best_genome(algorithm, config):
     pop_obj = algorithm.pop.get('F')
     X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
-    best_genome = genome_convert(X[best_index, :], [config.conv_layers_indexes, config.ann_layers_indexes])
+    best_genome = genome_convert(X[best_index, :], config)
     return best_genome
 
 # def old_remove_disconnected_layers(X, config):

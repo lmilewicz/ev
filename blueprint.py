@@ -67,7 +67,6 @@ class Blueprint():
                         activation=config.out_activation,
                         dtype=config.dtype)(last_layer)
         elif genome[-1] == 2:
-            #     TO DO --> XGboost
             output = tf.keras.layers.Dense(
                         units=config.out_units, 
                         name='out_dense_layer',
