@@ -12,7 +12,7 @@ import test
 class Config():
     def __init__(self, argv=[]):
         ### Model settings      ###
-        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
         self.enable_xgboost = False
         self.batch_size = 32
 
@@ -49,7 +49,7 @@ class Config():
         
 
         ### Evolution settings  ###
-        self.max_n_conv_layers = 5
+        self.max_n_conv_layers = 3
         self.max_n_ann_layers = 3
 
         self.n_conv_layers = 2
@@ -68,7 +68,7 @@ class Config():
 
 
         ### Genome settings     ###
-        self.max_n_conv_modules = 3
+        self.max_n_conv_modules = 1
         self.max_n_ann_modules = 1
 
         self.n_conv_modules = 1
@@ -81,12 +81,13 @@ class Config():
         self.ann_module_genome_len = int(self.max_n_ann_layers*(self.max_n_ann_layers-1)*0.5)
 
         self.conv_genome_len = self.conv_module_genome_len*self.max_n_conv_modules
-        self.ann_genome_len = self.ann_module_genome_len*self.max_n_ann_modules + 1 # +1 for output bit
-        self.genome_len = self.conv_genome_len + self.ann_genome_len
+        self.ann_genome_len = self.ann_module_genome_len*self.max_n_ann_modules
+        self.topology_len = self.conv_genome_len + self.ann_genome_len
+        self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
         self.learning_rate = 0.02
-        self.n_epochs = 20           ##################
+        self.n_epochs = 1           ##################
         self.out_activation = 'softmax'
 
         self.units = 16             ## To optimize
