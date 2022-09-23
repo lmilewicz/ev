@@ -9,6 +9,7 @@ from config import Config
 class Node(object, metaclass=ABCMeta):
     def __init__(self, params_dict):
             if 'units' in params_dict: self.units = params_dict['units']
+            else: self.units = 32
             if 'activation' in params_dict: self.activation = params_dict['activation']
             if 'kernel_size' in params_dict: self.kernel_size = params_dict['kernel_size']
             if 'dtype' in params_dict: self.dtype = params_dict['dtype']
@@ -44,7 +45,7 @@ class Convolution2D(Node):
     def create_node(self) -> tf.keras.layers.Layer:                                      
         if self.prob_layer:
             config = Config()
-            return tfp.layers.Convolution2DFlipout(filters=32,
+            return tfp.layers.Convolution2DFlipout(filters=self.units,
                                     kernel_size=self.kernel_size,
                                     padding='same',
                                     activation=self.activation,

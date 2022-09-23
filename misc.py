@@ -26,16 +26,28 @@ def genome_convert(genome, config):
     return genome_converted
 
 
-def get_params_dict(config, layer_type):
-	params_dict = {'activation':	config.activation,
-					'dtype':		tf.float32,
+# def get_params_dict(config, layer_type):
+# 	params_dict = {'activation':	config.activation,
+# 					'dtype':		tf.float32,
+# 					'prob_layer':	False}
+# 	if layer_type == node.DenseLayer:
+# 		params_dict['units'] = config.units
+# 	elif layer_type == node.Convolution2D:
+# 		params_dict['kernel_size'] = config.kernel_size
+# 	else:
+# 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
+# 	return params_dict
+
+
+def get_params_dict(config, layer_type, module_params):
+	params_dict = {'activation': 	config.activation_array[module_params[1]],
+					'dtype':		config.dtype,
 					'prob_layer':	False}
-	if layer_type == node.DenseLayer:
-		params_dict['units'] = config.units
-	elif layer_type == node.Convolution2D:
-		params_dict['kernel_size'] = config.kernel_size
-	else:
-		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
+
+	params_dict['units'] = 2 ^ module_params[0]
+
+	if layer_type == node.Convolution2D: params_dict['kernel_size'] = config.kernel_size
+
 	return params_dict
 
 

@@ -4,11 +4,11 @@ import misc
 
 
 class Module():
-	def __init__(self, genome, config, layer_type, layers_indexes, input_layer):
+	def __init__(self, genome, config, layer_type, layers_indexes, module_params, input_layer):
 		self.layer_type = layer_type
 		module_genome = misc.module_convert(genome, layers_indexes)
 		self.module_graph = misc.get_graph(module_genome)
-
+		self.module_params = module_params
 		self.process_graph(input_layer, config)
 
 	def process_graph(self, input_layer, config):
@@ -16,7 +16,9 @@ class Module():
 		layer = input_layer		
 		layers[0] = layer
 
-		params_dict = misc.get_params_dict(config, self.layer_type)
+		# params_dict = misc.get_params_dict(config, self.layer_type)
+		params_dict = misc.get_params_dict(config, self.layer_type, self.module_params)
+
 		layer_object = self.layer_type(params_dict)   
 
 		layers[1] = layer_object.create_node()(layer)

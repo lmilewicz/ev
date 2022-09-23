@@ -95,6 +95,9 @@ class Config():
         self.activation = 'relu'    ## To optimize
         self.dtype = tf.float32
 
+        self.activation_array = [tf.keras.activations.relu, 
+                tf.keras.activations.selu,
+                tf.keras.activations.swish]
 
         ### XGBoost settings    ###
         self.xgboost_params = {

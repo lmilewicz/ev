@@ -48,8 +48,9 @@ class Blueprint():
 
             genome_module = genome[module_genome_len*i:module_genome_len*(i+1)]
             if sum(genome_module) == 0: continue
+            module_params = genome[config.topology_len+i*2:config.topology_len+i*2+2]
 
-            module = Module(genome_module, config, layer_type, layers_indexes, input_layer = last_layer)
+            module = Module(genome_module, config, layer_type, layers_indexes, module_params, input_layer = last_layer)
 
             last_layer = module.get_module()
 
