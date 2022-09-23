@@ -26,19 +26,6 @@ def genome_convert(genome, config):
     return genome_converted
 
 
-# def get_params_dict(config, layer_type):
-# 	params_dict = {'activation':	config.activation,
-# 					'dtype':		tf.float32,
-# 					'prob_layer':	False}
-# 	if layer_type == node.DenseLayer:
-# 		params_dict['units'] = config.units
-# 	elif layer_type == node.Convolution2D:
-# 		params_dict['kernel_size'] = config.kernel_size
-# 	else:
-# 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
-# 	return params_dict
-
-
 def get_params_dict(config, layer_type, module_params):
 	params_dict = {'activation': 	config.activation_array[module_params[1]],
 					'dtype':		config.dtype,
@@ -148,24 +135,36 @@ def get_graph(module):
     for i in range(module_len):
         if i < module_len-1 and len(module[i]) >= len(module[i+1]):
             module_len = module_len - 1 
-            break 
+            break
 
     for i in range(module_len):
         graph[i + 2] = [j + 1 for j in range(len(module[i])) if module[i][j] == 1]
     
-    print(graph)
     graph[module_len+2] = [out for (out, input) in graph.items() if input]
 
     return graph
 
 
-# def old_remove_disconnected_layers(X, config):
 def get_best_genome(algorithm, config):
     pop_obj = algorithm.pop.get('F')
     X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
     best_genome = genome_convert(X[best_index, :], config)
     return best_genome
+
+
+# def get_params_dict(config, layer_type):
+# 	params_dict = {'activation':	config.activation,
+# 					'dtype':		tf.float32,
+# 					'prob_layer':	False}
+# 	if layer_type == node.DenseLayer:
+# 		params_dict['units'] = config.units
+# 	elif layer_type == node.Convolution2D:
+# 		params_dict['kernel_size'] = config.kernel_size
+# 	else:
+# 		raise ValueError('In get_params_dict: layer_type with wrong type: '+str(type(layer_type)))
+# 	return params_dict
+
 
 # def old_remove_disconnected_layers(X, config):
 #     _X = np.zeros(X.shape, dtype=np.int)

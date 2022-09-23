@@ -49,8 +49,8 @@ class Config():
         
 
         ### Evolution settings  ###
-        self.max_n_conv_layers = 3
-        self.max_n_ann_layers = 3
+        self.max_n_conv_layers = 4
+        self.max_n_ann_layers = 4
 
         self.n_conv_layers = 2
         self.n_ann_layers = 2
