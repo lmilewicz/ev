@@ -16,9 +16,7 @@ class Module():
 		layer = input_layer		
 		layers[0] = layer
 
-		# params_dict = misc.get_params_dict(config, self.layer_type)
 		params_dict = misc.get_params_dict(config, self.layer_type, self.module_params)
-
 		layer_object = self.layer_type(params_dict)   
 
 		layers[1] = layer_object.create_node()(layer)
