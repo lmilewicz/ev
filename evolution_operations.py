@@ -60,7 +60,7 @@ def perform_mutations(X, config):
     search = np.where(np.logical_and(dice_array>=0.7, dice_array<0.9))[0]
     if search.size: activation_mask[search, module_index[search]+1] = True
 
-    _X[neurons_mask] = np.random.randint(7)
+    _X[neurons_mask] = np.random.randint(6)
     _X[activation_mask] = np.random.randint(3)
 
     # Output module

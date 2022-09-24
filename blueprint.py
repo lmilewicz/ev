@@ -89,8 +89,13 @@ class Blueprint():
         #     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         #     metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
 
+        # self.model.compile(
+        #     optimizer=config.optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+        # )
         self.model.compile(
-            optimizer=config.optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+            optimizer=tf.keras.optimizers.Adam(config.learning_rate),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
         )
 
         config.blueprint_time.append(time.time()-time1)

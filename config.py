@@ -12,7 +12,7 @@ import test
 class Config():
     def __init__(self, argv=[]):
         ### Model settings      ###
-        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
         self.enable_xgboost = False
         self.batch_size = 32
 
@@ -86,19 +86,21 @@ class Config():
         self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
-        learning_rate = 0.1
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate)
-        self.n_epochs = 1           ##################
+        self.learning_rate = 0.01
+        self.optimizer = tf.keras.optimizers.Adam(self.learning_rate)
+        self.n_epochs = 5           ##################
         self.out_activation = 'softmax'
 
-        self.units = 16             ## To optimize
-        self.kernel_size = 3        ## To optimize
-        self.activation = 'relu'    ## To optimize
+        self.kernel_size = 3
         self.dtype = tf.float32
+
+        self.units = 16             ## To optimize
+        self.activation = 'relu'    ## To optimize
 
         self.activation_array = [tf.keras.activations.relu, 
                 tf.keras.activations.selu,
                 tf.keras.activations.swish]
+        self.units_array = [8, 16, 24, 32, 48, 64]
 
         ### XGBoost settings    ###
         self.xgboost_params = {

@@ -29,11 +29,14 @@ def genome_convert(genome, config):
 
 
 def get_params_dict(config, layer_type, module_params):
-	params_dict = {'activation': 	config.activation_array[module_params[1]],
+	params_dict = {	# 'units':		2 ^ module_params[0],
+					# 'units':		config.units_array[module_params[0]],
+					'units':		16,
+					# 'activation': 	config.activation_array[module_params[1]],
+					'activation': 	'relu',
 					'dtype':		config.dtype,
 					'prob_layer':	False}
 
-	params_dict['units'] = 2 ^ module_params[0]
 
 	if layer_type == node.Convolution2D: params_dict['kernel_size'] = config.kernel_size
 
