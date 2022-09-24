@@ -26,6 +26,7 @@ def visualize_genome_main(genome, config, gen=0):
     for i, gene in enumerate(genome):
         if i >= config.max_n_modules: break
         if all(sum(layer) == 0 for layer in gene): continue
+        if not output_str == 'input' and i < len(genome)-2: dot.edge(output_str, 'module_'+str(i)+'_node_1')
         if set_input_connection: 
             dot.edge(input_str, 'module_'+str(i)+'_node_1')
             set_input_connection = False
@@ -38,8 +39,11 @@ def visualize_genome_main(genome, config, gen=0):
             else:
                 with dot.subgraph(name='cluster_'+str(i)) as c:
                     output_str = add_graph_connection(output_str, i, output, inputs, dot=c)
+                    if i < config.max_n_conv_modules: label = "CNN Module "+str(i+1)
+                    else: label = "DNN Module "+str(i+1-config.max_n_conv_modules)
+                    c.attr(label=label)
 
-        if i < len(genome)-1: dot.edge(output_str, 'module_'+str(i+1)+'_node_1')
+
 
     dot.node('output', 'Output')
     dot.edge(output_str, 'output')

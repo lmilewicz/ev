@@ -30,8 +30,8 @@ class Config():
         self.best_model = None
 
         ### Saved files ###
-        self.global_dir = "model_json"
-        self.genomes_path = "genomes_gen_"
+        self.global_dir = "model_json"+"/"+self.dataset
+        self.genomes_path = "_genomes_gen_"
         self.best_model_path = "bestmodel_gen_"
         self.algorithm_path = "algorithm_last_state"
 
@@ -63,7 +63,7 @@ class Config():
         if len(argv)>1 and int(argv[1]) > 0:
             self.n_gen = int(argv[1])
         else:
-            self.n_gen = 5
+            self.n_gen = 3
         self.termination = ('n_gen', self.n_gen)
 
 
