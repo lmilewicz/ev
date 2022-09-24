@@ -1,7 +1,106 @@
-numpy
-pandas
-pymoo
-tensorboard
-tensorflow
-tensorflow-gpu
-tensorflow-probability
+about-time==3.1.1
+absl-py==1.2.0
+alive-progress==2.4.1
+asttokens @ file:///opt/conda/conda-bld/asttokens_1646925590279/work
+astunparse==1.6.3
+autograd==1.4
+backcall @ file:///home/ktietz/src/ci/backcall_1611930011877/work
+Bottleneck @ file:///opt/conda/conda-bld/bottleneck_1657175564434/work
+cachetools==5.2.0
+certifi @ file:///opt/conda/conda-bld/certifi_1663615672595/work/certifi
+charset-normalizer==2.1.1
+cloudpickle==2.2.0
+cma==3.2.2
+contourpy==1.0.5
+cycler==0.11.0
+debugpy @ file:///tmp/build/80754af9/debugpy_1637091799509/work
+decorator @ file:///opt/conda/conda-bld/decorator_1643638310831/work
+Deprecated==1.2.13
+dill==0.3.5.1
+dm-tree==0.1.7
+entrypoints @ file:///tmp/build/80754af9/entrypoints_1649926439650/work
+etils==0.8.0
+executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
+flatbuffers==2.0.7
+fonttools==4.37.3
+future==0.18.2
+gast==0.4.0
+google-auth==2.11.1
+google-auth-oauthlib==0.4.6
+google-pasta==0.2.0
+googleapis-common-protos==1.56.4
+grapheme==0.6.0
+graphviz==0.20.1
+grpcio==1.49.1
+h5py==3.7.0
+idna==3.4
+importlib-metadata==4.12.0
+importlib-resources==5.9.0
+ipykernel @ file:///opt/conda/conda-bld/ipykernel_1662361798230/work
+ipython @ file:///opt/conda/conda-bld/ipython_1657652213665/work
+jedi @ file:///tmp/build/80754af9/jedi_1644297102865/work
+jupyter-core @ file:///opt/conda/conda-bld/jupyter_core_1651671229925/work
+jupyter_client @ file:///opt/conda/conda-bld/jupyter_client_1662504365333/work
+keras==2.10.0
+Keras-Preprocessing==1.1.2
+kiwisolver==1.4.4
+libclang==14.0.6
+Markdown==3.4.1
+MarkupSafe==2.1.1
+matplotlib==3.6.0
+matplotlib-inline @ file:///opt/conda/conda-bld/matplotlib-inline_1662014470464/work
+mkl-fft==1.3.1
+mkl-random @ file:///tmp/build/80754af9/mkl_random_1626186066731/work
+mkl-service==2.4.0
+nest-asyncio @ file:///tmp/build/80754af9/nest-asyncio_1649847906199/work
+numexpr @ file:///opt/conda/conda-bld/numexpr_1656940300424/work
+numpy==1.23.3
+oauthlib==3.2.1
+opt-einsum==3.3.0
+packaging @ file:///tmp/build/80754af9/packaging_1637314298585/work
+pandas==1.4.4
+parso @ file:///opt/conda/conda-bld/parso_1641458642106/work
+pexpect @ file:///tmp/build/80754af9/pexpect_1605563209008/work
+pickleshare @ file:///tmp/build/80754af9/pickleshare_1606932040724/work
+Pillow==9.2.0
+promise==2.3
+prompt-toolkit @ file:///tmp/build/80754af9/prompt-toolkit_1633440160888/work
+protobuf==3.19.5
+psutil @ file:///opt/conda/conda-bld/psutil_1656431268089/work
+ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
+pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+Pygments @ file:///opt/conda/conda-bld/pygments_1644249106324/work
+pymoo==0.6.0
+pyparsing @ file:///opt/conda/conda-bld/pyparsing_1661452539315/work
+python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+pytz @ file:///opt/conda/conda-bld/pytz_1654762638606/work
+pyzmq @ file:///opt/conda/conda-bld/pyzmq_1657724186960/work
+requests==2.28.1
+requests-oauthlib==1.3.1
+rsa==4.9
+scipy==1.9.1
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
+tensorboard==2.10.0
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+tensorflow==2.10.0
+tensorflow-datasets==4.6.0
+tensorflow-estimator==2.10.0
+tensorflow-io-gcs-filesystem==0.27.0
+tensorflow-metadata==1.10.0
+tensorflow-probability==0.18.0
+termcolor==2.0.1
+toml==0.10.2
+tornado @ file:///opt/conda/conda-bld/tornado_1662061693373/work
+tqdm==4.64.1
+traitlets @ file:///tmp/build/80754af9/traitlets_1636710298902/work
+typing_extensions==4.3.0
+urllib3==1.26.12
+wcwidth @ file:///Users/ktietz/demo/mc3/conda-bld/wcwidth_1629357192024/work
+Werkzeug==2.2.2
+wrapt==1.14.1
+xgboost==1.6.2
+zipp==3.8.1

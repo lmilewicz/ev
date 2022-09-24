@@ -12,17 +12,19 @@ import test
 class Config():
     def __init__(self, argv=[]):
 
-        ##### MAIN SETTINGS TO UPDATE #####
+        ##### MAIN SETTINGS TO UPDATE       #####
         self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
         self.n_gen = 10
         self.n_epochs = 10
+        self.pop_size = 20
 
-        ##### SECONDARY SETTINGS TO UPDATE #####
+        ##### SECONDARY SETTINGS TO UPDATE  #####
         self.batch_size = 32
         self.verbose = True
         self.max_n_conv_modules = 2
         self.max_n_ann_modules = 2
-
+        self.max_n_conv_layers = 5
+        self.max_n_ann_layers = 5
 
         ### Model settings      ###
         # self.batch_size = 32
@@ -59,14 +61,14 @@ class Config():
         
 
         ### Evolution settings  ###
-        self.max_n_conv_layers = 5
-        self.max_n_ann_layers = 5
+        # self.max_n_conv_layers = 5
+        # self.max_n_ann_layers = 5
 
         self.n_conv_layers = 3
         self.n_ann_layers = 3
 
         self.number_of_objectives = 2
-        self.pop_size = 20                  ##################
+        # self.pop_size = 20
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -102,9 +104,8 @@ class Config():
 
         self.kernel_size = 3
         self.dtype = tf.float32
-
-        self.units = 32             ## To optimize
-        self.activation = 'relu'    ## To optimize
+        self.units = 32
+        self.activation = 'relu'
 
         self.activation_array = [tf.keras.activations.relu, 
                 tf.keras.activations.selu,
