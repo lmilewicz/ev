@@ -12,7 +12,7 @@ import test
 class Config():
     def __init__(self, argv=[]):
         ### Model settings      ###
-        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
         self.enable_xgboost = False
         self.batch_size = 32
 
@@ -23,7 +23,7 @@ class Config():
 
         ### Test settings ###
         self.save_model = self.log_stats = self.save_graph_visualization = True
-        self.verbose = False
+        self.verbose = True
         self.debug = False
 
         ### Global test values ###
@@ -56,8 +56,8 @@ class Config():
         self.n_ann_layers = 3
 
         self.number_of_objectives = 2
-        #self.pop_size = 10                ##################
-        self.pop_size = 5               ##################
+        #self.pop_size = 10                 ##################
+        self.pop_size = 20                  ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -69,7 +69,7 @@ class Config():
 
         ### Genome settings     ###
         self.max_n_conv_modules = 2
-        self.max_n_ann_modules = 1
+        self.max_n_ann_modules = 2
 
         self.n_conv_modules = 1
         self.n_ann_modules = 1
@@ -86,7 +86,7 @@ class Config():
         self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
-        self.learning_rate = 0.01
+        self.learning_rate = 0.001
         self.optimizer = tf.keras.optimizers.Adam(self.learning_rate)
         self.n_epochs = 5           ##################
         self.out_activation = 'softmax'
@@ -100,16 +100,16 @@ class Config():
         self.activation_array = [tf.keras.activations.relu, 
                 tf.keras.activations.selu,
                 tf.keras.activations.swish]
-        self.units_array = [8, 16, 24, 32, 48, 64]
+        self.units_array = [32, 64, 128, 256, 512, 1024]
 
         ### XGBoost settings    ###
         self.xgboost_params = {
-            'max_depth':3,
-            # 'eta':0.05,
-            'objective':'multi:softprob',
+            'max_depth': 5,
+            'eta': 0.08,
+            'objective': 'multi:softprob',
             'num_class': self.out_units,
             # 'early_stopping_rounds':10,
-            'eval_metric':'merror'
+            'eval_metric': 'merror'
         }
         self.xgboost_n_round = 10
 
