@@ -1,6 +1,7 @@
 from graphviz import Digraph
 
 from misc import get_graph, get_best_genome
+
 from config import Config
 
 
@@ -71,5 +72,5 @@ def add_graph_connection(output_str, i, output, inputs, dot, concat=False):
 if __name__ == "__main__":
     genome = [[[1], [0, 0], [1, 1, 0]], [[0], [1, 0], [1, 0, 1]], [[1], [1, 1], [1, 1, 1], [0]]]
 
-    dot = visualize_genome(genome, 'Best Genome')
+    dot = visualize_genome_main(genome, Config())
     dot.view()

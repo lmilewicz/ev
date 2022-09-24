@@ -11,11 +11,21 @@ import test
 
 class Config():
     def __init__(self, argv=[]):
-        ### Model settings      ###
-        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
-        self.enable_xgboost = False
-        self.batch_size = 32
 
+        ##### MAIN SETTINGS TO UPDATE #####
+        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.n_gen = 10
+        self.n_epochs = 10
+
+        ##### SECONDARY SETTINGS TO UPDATE #####
+        self.batch_size = 32
+        self.verbose = True
+        self.max_n_conv_modules = 2
+        self.max_n_ann_modules = 2
+
+
+        ### Model settings      ###
+        # self.batch_size = 32
         self.ds_train, self.ds_test, ds_info = DataSet(self.dataset, self.batch_size)
         self.dataset_size = ds_info.splits['train'].num_examples
         self.input_shape = ds_info.features['image'].shape
@@ -23,7 +33,7 @@ class Config():
 
         ### Test settings ###
         self.save_model = self.log_stats = self.save_graph_visualization = True
-        self.verbose = True
+        # self.verbose = True
         self.debug = False
 
         ### Global test values ###
@@ -56,20 +66,19 @@ class Config():
         self.n_ann_layers = 3
 
         self.number_of_objectives = 2
-        #self.pop_size = 10                 ##################
         self.pop_size = 20                  ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
             self.n_gen = int(argv[1])
-        else:
-            self.n_gen = 3
+        # else:
+        #     self.n_gen = 10
         self.termination = ('n_gen', self.n_gen)
 
 
         ### Genome settings     ###
-        self.max_n_conv_modules = 2
-        self.max_n_ann_modules = 2
+        # self.max_n_conv_modules = 2
+        # self.max_n_ann_modules = 2
 
         self.n_conv_modules = 1
         self.n_ann_modules = 1
@@ -86,15 +95,15 @@ class Config():
         self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
+        # self.n_epochs = 10
         self.learning_rate = 0.001
         self.optimizer = tf.keras.optimizers.Adam(self.learning_rate)
-        self.n_epochs = 5           ##################
         self.out_activation = 'softmax'
 
         self.kernel_size = 3
         self.dtype = tf.float32
 
-        self.units = 16             ## To optimize
+        self.units = 32             ## To optimize
         self.activation = 'relu'    ## To optimize
 
         self.activation_array = [tf.keras.activations.relu, 
