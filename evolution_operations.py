@@ -56,9 +56,9 @@ def perform_mutations(X, config):
     activation_mask = np.full(X.shape, False)
 
     search = np.where(np.logical_and(dice_array>=0.5, dice_array<0.7))[0]
-    if search.size: neurons_mask[search, module_index] = True
+    if search.size: neurons_mask[search, module_index[search]] = True
     search = np.where(np.logical_and(dice_array>=0.7, dice_array<0.9))[0]
-    if search.size: activation_mask[search, module_index+1] = True
+    if search.size: activation_mask[search, module_index[search]+1] = True
 
     _X[neurons_mask] = np.random.randint(7)
     _X[activation_mask] = np.random.randint(3)

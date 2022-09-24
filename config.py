@@ -57,7 +57,7 @@ class Config():
 
         self.number_of_objectives = 2
         #self.pop_size = 10                ##################
-        self.pop_size = 10               ##################
+        self.pop_size = 5               ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
@@ -86,9 +86,9 @@ class Config():
         self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
-        learning_rate = 0.02
+        learning_rate = 0.1
         self.optimizer = tf.keras.optimizers.Adam(learning_rate)
-        self.n_epochs = 10           ##################
+        self.n_epochs = 1           ##################
         self.out_activation = 'softmax'
 
         self.units = 16             ## To optimize
