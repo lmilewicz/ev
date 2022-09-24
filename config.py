@@ -57,7 +57,7 @@ class Config():
 
         self.number_of_objectives = 2
         #self.pop_size = 10                ##################
-        self.pop_size = 2               ##################
+        self.pop_size = 10               ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
