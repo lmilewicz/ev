@@ -49,26 +49,26 @@ class Config():
         
 
         ### Evolution settings  ###
-        self.max_n_conv_layers = 4
-        self.max_n_ann_layers = 4
+        self.max_n_conv_layers = 5
+        self.max_n_ann_layers = 5
 
-        self.n_conv_layers = 2
-        self.n_ann_layers = 2
+        self.n_conv_layers = 3
+        self.n_ann_layers = 3
 
         self.number_of_objectives = 2
-        #self.pop_size = 10            ##################
+        #self.pop_size = 10                ##################
         self.pop_size = 2               ##################
         self.n_constr = 0
         self.algorithm = 'NSGA2'
         if len(argv)>1 and int(argv[1]) > 0:
             self.n_gen = int(argv[1])
         else:
-            self.n_gen = 2
+            self.n_gen = 5
         self.termination = ('n_gen', self.n_gen)
 
 
         ### Genome settings     ###
-        self.max_n_conv_modules = 1
+        self.max_n_conv_modules = 2
         self.max_n_ann_modules = 1
 
         self.n_conv_modules = 1
@@ -86,8 +86,9 @@ class Config():
         self.genome_len = self.topology_len + self.max_n_modules*2 + 1
 
         ### ANN settings        ###
-        self.learning_rate = 0.02
-        self.n_epochs = 1           ##################
+        learning_rate = 0.02
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate)
+        self.n_epochs = 10           ##################
         self.out_activation = 'softmax'
 
         self.units = 16             ## To optimize

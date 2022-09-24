@@ -13,7 +13,9 @@ def genome_convert(genome, config):
     #   Converts genome into blueprint
     genome_converted = []
     module_start = 0
-    for layers_indexes in [config.conv_layers_indexes, config.ann_layers_indexes]:
+    layers_indexes = config.conv_layers_indexes
+    for i in range(config.max_n_modules):
+        if i == config.n_conv_modules: layers_indexes = config.ann_layers_indexes
         genome_converted.append(module_convert(genome[module_start:module_start+layers_indexes[-1]].tolist(), layers_indexes))
         module_start = module_start + layers_indexes[-1]
     

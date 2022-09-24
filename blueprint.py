@@ -10,6 +10,7 @@ import xgboost as xgb
 import pandas as pd 
 import time
 import numpy as np
+from datetime import datetime
 
 from module import Module
 import node
@@ -87,8 +88,9 @@ class Blueprint():
         #     optimizer=tf.keras.optimizers.Adam(config.learning_rate),
         #     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         #     metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+
         self.model.compile(
-            optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+            optimizer=config.optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
         )
 
         config.blueprint_time.append(time.time()-time1)
@@ -124,7 +126,8 @@ class Blueprint():
 
         self.config.performance_time.append(time.time()-time2)
 
-        print("Performance for model: {:.3f}".format(1-performance))
+        now = datetime.now().time() # time object
+        print(str(now.strftime("%H:%M:%S"))+": Performance for model: {:.3f}, genome {}".format(1-performance, self.genome))
         return performance
 
 

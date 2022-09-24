@@ -24,7 +24,7 @@ def visualize_genome_main(genome, config, gen=0):
     set_input_connection = True
 
     for i, gene in enumerate(genome):
-        if i >= config.max_n_modules: continue
+        if i >= config.max_n_modules: break
         if all(sum(layer) == 0 for layer in gene): continue
         if set_input_connection: 
             dot.edge(input_str, 'module_'+str(i)+'_node_1')
