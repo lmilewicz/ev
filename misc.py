@@ -89,6 +89,9 @@ class RemoveDisconnectedLayers():
 
                 gene_copy2 = gene_copy[0:len(gene)].astype(np.int)
                 self._X[i, index_1:index_2] = gene_copy2
+        
+        self._X[:, self.config.topology_len:-1] = self.X[:, self.config.topology_len:-1]
+
 
 
     def return_new_X(self):

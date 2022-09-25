@@ -10,7 +10,6 @@ import xgboost as xgb
 import pandas as pd 
 import time
 import numpy as np
-from datetime import datetime
 
 from module import Module
 import node
@@ -131,8 +130,6 @@ class Blueprint():
 
         self.config.performance_time.append(time.time()-time2)
 
-        now = datetime.now().time() # time object
-        print(str(now.strftime("%H:%M:%S"))+": Performance for model: {:.3f}, genome {}".format(1-performance, self.genome))
         return performance
 
 

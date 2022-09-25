@@ -13,18 +13,20 @@ class Config():
     def __init__(self, argv=[]):
 
         ##### MAIN SETTINGS TO UPDATE       #####
-        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
         self.n_gen = 10
-        self.n_epochs = 10
+        self.n_epochs = 5
         self.pop_size = 20
 
         ##### SECONDARY SETTINGS TO UPDATE  #####
         self.batch_size = 32
         self.verbose = True
-        self.max_n_conv_modules = 2
+        self.max_n_conv_modules = 3
         self.max_n_ann_modules = 2
-        self.max_n_conv_layers = 5
-        self.max_n_ann_layers = 5
+        self.max_n_conv_layers = 7
+        self.max_n_ann_layers = 7
+        self.number_of_objectives = 2
+
 
         ### Model settings      ###
         # self.batch_size = 32
@@ -43,7 +45,7 @@ class Config():
 
         ### Saved files ###
         self.global_dir = "model_json"+"/"+self.dataset
-        self.genomes_path = "_genomes_gen_"
+        self.genomes_path = "genomes_gen_"
         self.best_model_path = "bestmodel_gen_"
         self.algorithm_path = "algorithm_last_state"
 
@@ -67,7 +69,7 @@ class Config():
         self.n_conv_layers = 3
         self.n_ann_layers = 3
 
-        self.number_of_objectives = 2
+        # self.number_of_objectives = 2
         # self.pop_size = 20
         self.n_constr = 0
         self.algorithm = 'NSGA2'
@@ -82,8 +84,8 @@ class Config():
         # self.max_n_conv_modules = 2
         # self.max_n_ann_modules = 2
 
-        self.n_conv_modules = 1
-        self.n_ann_modules = 1
+        self.n_conv_modules = 3
+        self.n_ann_modules = 2
 
         self.max_n_modules = self.max_n_conv_modules+self.max_n_ann_modules
         self.n_modules = self.n_conv_modules+self.n_ann_modules

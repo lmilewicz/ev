@@ -15,6 +15,8 @@ def log_stats(algorithm):
     X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
     best_genome = misc.get_best_genome(algorithm, config)
+    complexity = 0
+    if config.number_of_objectives > 1: pop_obj[best_index, 1]
 
     if config.verbose:
         print('Gen = {}'.format(gen))
@@ -25,9 +27,7 @@ def log_stats(algorithm):
             np.max(pop_obj[:, 0])))
 
         print('Best genome: {}'.format(best_genome))
-        print('Result = {:.3f}, params number = {:.2e}'
-            .format(1-pop_obj[best_index, 0], pop_obj[best_index, 1]))
-
+        print('Error = {:.3f}, params number = {:.2e}'.format(pop_obj[best_index, 0], complexity))
         print('Timestats: blueprint_time: '
             +str(round(mean(config.blueprint_time), 2))
             +'. fit_time: '
@@ -35,14 +35,18 @@ def log_stats(algorithm):
             +'. performance_time: '
             +str(round(mean(config.performance_time), 2)))
     else:
+        
         print('Gen {}, error {:.3f}, params {:.2e}, time {:.2f}, {:.2f}, {:.2f}, genome {}'.format(
             config.load_gen+gen,
-            np.min(pop_obj[:, 0]),
-            pop_obj[best_index, 1],
+            pop_obj[best_index, 0],
+            complexity,
             round(mean(config.fit_time),2),
             round(mean(config.performance_time),2),
             round((time.time()-config.start_time), 2),
             best_genome))
+
+    # for i, genome in enumerate(X):
+    #     print(i, genome)
 
 
 def save_model(algorithm):

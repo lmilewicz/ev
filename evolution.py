@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime
 
 from pymoo.core.problem import Problem
 
@@ -17,6 +18,10 @@ class EVProblem(Problem):
         self.config = config
         self.xl = np.zeros(config.genome_len)
         self.xu = np.ones(config.genome_len)
+        for i in range(config.topology_len, config.genome_len):
+            if i % 2: self.xu[i] = 2
+            else: self.xu[i] = 5
+        self.xu[-1] = 2
 
     def _evaluate(self, x, out, *args, **kwargs):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
@@ -31,11 +36,13 @@ class EVProblem(Problem):
             performance = blueprint_object.evaluate_model()
 
             objs[i, 0] = 1 - performance
-            objs[i, 1] = misc.get_params_number(model)
+            if self.config.number_of_objectives > 1: objs[i, 1] = misc.get_params_number(model)
 
             if performance > best_perf:
                 best_perf = performance
                 best_model = model
+
+            print(str(datetime.now().time().strftime("%H:%M:%S"))+": Error: {:.4f}, genome {}".format(1-performance, x[i, :]))
 
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))

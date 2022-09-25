@@ -90,16 +90,16 @@ def topology_range_mutation(config):
     module_update_prob = 0.1
     layer_update_prob = 0.25
 
-    dice = np.random.random()
-    if dice < module_update_prob:
-        if(dice < module_update_prob/4): 
-            if(config.n_conv_modules < config.max_n_conv_modules): config.n_conv_modules = config.n_conv_modules + 1
-        elif(dice < module_update_prob/2): 
-            if(config.n_conv_modules> 0): config.n_conv_modules = config.n_conv_modules - 1
-        elif(dice < module_update_prob*3/4): 
-            if(config.n_ann_modules < config.max_n_ann_modules): config.n_ann_modules = config.n_ann_modules + 1
-        else: 
-            if(config.n_ann_modules): config.n_ann_modules = config.n_ann_modules - 1
+    # dice = np.random.random()
+    # if dice < module_update_prob:
+    #     if(dice < module_update_prob/4): 
+    #         if(config.n_conv_modules < config.max_n_conv_modules): config.n_conv_modules = config.n_conv_modules + 1
+    #     elif(dice < module_update_prob/2): 
+    #         if(config.n_conv_modules> 0): config.n_conv_modules = config.n_conv_modules - 1
+    #     elif(dice < module_update_prob*3/4): 
+    #         if(config.n_ann_modules < config.max_n_ann_modules): config.n_ann_modules = config.n_ann_modules + 1
+    #     else: 
+    #         if(config.n_ann_modules): config.n_ann_modules = config.n_ann_modules - 1
 
     dice = np.random.random()
     if dice < layer_update_prob:

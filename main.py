@@ -12,6 +12,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 import sys
 
 from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.operators.crossover.pntx import PointCrossover
 
 from pymoo.optimize import minimize
 
@@ -31,6 +32,7 @@ def main():
     problem = evolution.EVProblem(config)
 
     algorithm = NSGA2(pop_size=config.pop_size,
+                crossover=PointCrossover(n_points=2),
                 sampling=evolution_operations.SamplingFromSmall(),
                 mutation=evolution_operations.MutationFromSmall(),
                 eliminate_duplicates=True)
@@ -44,5 +46,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
 
 
