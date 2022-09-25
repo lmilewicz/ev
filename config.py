@@ -14,7 +14,7 @@ class Config():
 
         ##### MAIN SETTINGS TO UPDATE       #####
         self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
-        self.n_gen = 10
+        self.n_gen = 50
         self.n_epochs = 5
         self.pop_size = 20
 
