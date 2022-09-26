@@ -27,6 +27,8 @@ class EVProblem(Problem):
         objs = np.full((x.shape[0], self.n_obj), np.nan)
         best_perf = 0
 
+        # print("_evaluate")
+        # print(x)
 
         best_model = None
         for i in range(x.shape[0]):
@@ -52,6 +54,8 @@ class EVProblem(Problem):
 
         out['F'] = objs
 
+
+        # print(objs)
 
 def do_every_generations(algorithm):
     if algorithm.problem.config.log_stats: test.log_stats(algorithm)

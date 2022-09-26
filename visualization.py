@@ -23,7 +23,7 @@ def visualize_genome_main(genome, config, gen=0):
     output_str = 'input'
     dot.node(input_str, 'Input')
     set_input_connection = True
-
+    genome_params = genome[config.max_n_modules:-1]
     for i, gene in enumerate(genome):
         if i >= config.max_n_modules: break
         if all(sum(layer) == 0 for layer in gene): continue
@@ -41,7 +41,12 @@ def visualize_genome_main(genome, config, gen=0):
                 with dot.subgraph(name='cluster_'+str(i)) as c:
                     output_str = add_graph_connection(output_str, i, output, inputs, dot=c)
                     if i < config.max_n_conv_modules: label = "CNN Module "+str(i+1)
-                    else: label = "DNN Module "+str(i+1-config.max_n_conv_modules)
+                    else: label = "DNN Module: "+str(i+1-config.max_n_conv_modules)
+                    label = label +"\n"
+                    label = label +"Filters/neurons number: "+str(config.units_array[genome_params[i][0]])
+                    label = label +"\n"
+                    label = label +"Activation layer: "+config.activation_array[genome_params[i][1]].__name__
+
                     c.attr(label=label)
 
 

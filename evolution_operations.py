@@ -10,7 +10,7 @@ class SamplingFromSmall(Sampling):
     def __init__(self) -> None:
         super().__init__()
         
-    def _do(self, problem, n_samples, **kwargs):
+    def _do(self, problem, n_samples, **kwargs):      
         if problem.config.load_genomes != None:
             _X = np.array(problem.config.load_genomes.copy())
         else:
@@ -23,29 +23,50 @@ class SamplingFromSmall(Sampling):
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
-class MutationFromSmall(Mutation):
-    def __init__(self, prob=None):
+class SamplingAll (Sampling):
+    def __init__(self) -> None:
         super().__init__()
-        self.prob = prob
+        
+    def _do(self, problem, n_samples, **kwargs):      
+        if problem.config.load_genomes != None:
+            _X = np.array(problem.config.load_genomes.copy())
+        else:
+            _X = np.random.random((n_samples, problem.n_var))
+            _X = (_X > 0.5).astype(np.int)
 
-    def _do(self, problem, X, **kwargs):       
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
+class MutationFromSmall(Mutation):
+    def __init__(self):
+        super().__init__()
+
+    def _do(self, problem, X, **kwargs):
+        _X = perform_mutations(X, problem.config, fromSmall=True)
+
+        return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
+
+class MutationAll(Mutation):
+    def __init__(self):
+        super().__init__()
+
+    def _do(self, problem, X, **kwargs):    
         _X = perform_mutations(X, problem.config)
 
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
-
-def perform_mutations(X, config):
+def perform_mutations(X, config, fromSmall=False):
     _X = X.copy()
 
-    topology_range_mutation(config)
-    R = calculate_range(X.shape, config)
+    if fromSmall:
+        topology_range_mutation(config)
+        R = calculate_range(X.shape, config)
 
     dice_array = np.random.random(X.shape[0])
 
     # Topology
     topology_mask = np.full(X.shape, False)
-    topology_mask[dice_array < 0.5, :] = True
-    topology_mask[~R] = False
+    topology_mask[dice_array < 0.3, :] = True
+    if fromSmall: topology_mask[~R] = False
     _X = topology_mutation(X, prob=1.0/config.topology_len, R=topology_mask)
 
     # Neurons number & Activation function
@@ -55,9 +76,9 @@ def perform_mutations(X, config):
     neurons_mask = np.full(X.shape, False)
     activation_mask = np.full(X.shape, False)
 
-    search = np.where(np.logical_and(dice_array>=0.5, dice_array<0.7))[0]
+    search = np.where(np.logical_and(dice_array>=0.3, dice_array<0.6))[0]
     if search.size: neurons_mask[search, module_index[search]] = True
-    search = np.where(np.logical_and(dice_array>=0.7, dice_array<0.9))[0]
+    search = np.where(np.logical_and(dice_array>=0.6, dice_array<0.9))[0]
     if search.size: activation_mask[search, module_index[search]+1] = True
 
     _X[neurons_mask] = np.random.randint(6)
@@ -78,9 +99,11 @@ def topology_mutation(X, prob, R):
     M = np.random.random(X.shape)
     flip, no_flip = M < prob, M >= prob
 
+    flip[~R] = False
+    no_flip[~R] = True
+
     _X[flip] = np.logical_not(X[flip])
     _X[no_flip] = X[no_flip]
-    _X[~R] = False
 
     _X = _X.astype(np.int)
 
@@ -90,16 +113,16 @@ def topology_range_mutation(config):
     module_update_prob = 0.1
     layer_update_prob = 0.25
 
-    # dice = np.random.random()
-    # if dice < module_update_prob:
-    #     if(dice < module_update_prob/4): 
-    #         if(config.n_conv_modules < config.max_n_conv_modules): config.n_conv_modules = config.n_conv_modules + 1
-    #     elif(dice < module_update_prob/2): 
-    #         if(config.n_conv_modules> 0): config.n_conv_modules = config.n_conv_modules - 1
-    #     elif(dice < module_update_prob*3/4): 
-    #         if(config.n_ann_modules < config.max_n_ann_modules): config.n_ann_modules = config.n_ann_modules + 1
-    #     else: 
-    #         if(config.n_ann_modules): config.n_ann_modules = config.n_ann_modules - 1
+    dice = np.random.random()
+    if dice < module_update_prob:
+        if(dice < module_update_prob/4): 
+            if(config.n_conv_modules < config.max_n_conv_modules): config.n_conv_modules = config.n_conv_modules + 1
+        elif(dice < module_update_prob/2): 
+            if(config.n_conv_modules> 0): config.n_conv_modules = config.n_conv_modules - 1
+        elif(dice < module_update_prob*3/4): 
+            if(config.n_ann_modules < config.max_n_ann_modules): config.n_ann_modules = config.n_ann_modules + 1
+        else: 
+            if(config.n_ann_modules): config.n_ann_modules = config.n_ann_modules - 1
 
     dice = np.random.random()
     if dice < layer_update_prob:

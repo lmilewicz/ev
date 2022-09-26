@@ -51,7 +51,7 @@ class Convolution2D(Node):
                                     activation=self.activation,
                                     kernel_divergence_fn=config.kl_divergence_function,
                                     dtype=self.dtype)
-        return tf.keras.layers.Conv2D(filters=32,
+        return tf.keras.layers.Conv2D(filters=self.units,
                                     kernel_size=self.kernel_size,
                                     padding='same',
                                     activation=self.activation,
