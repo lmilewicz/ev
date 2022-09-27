@@ -16,7 +16,7 @@ def log_stats(algorithm):
     X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
     best_genome = misc.get_best_genome(algorithm, config)
-    complexity = 0
+    complexity = 999999
     if config.number_of_objectives > 1: complexity = pop_obj[best_index, 1]
 
     if config.verbose:

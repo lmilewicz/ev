@@ -12,7 +12,7 @@ import visualization
 class EVProblem(Problem):
     def __init__(self, config):
         # E.g. genome for 4 layers  - all connected: [1], [1, 1], [1, 1, 1] -> 6
-        super().__init__(n_var=config.genome_len, n_obj=config.number_of_objectives, 
+        super().__init__(n_var=config.genome_len, n_obj=2, 
             n_constr=config.n_constr, type_var=np.int)
 
         self.config = config
@@ -39,6 +39,7 @@ class EVProblem(Problem):
 
             objs[i, 0] = 1 - performance
             if self.config.number_of_objectives > 1: objs[i, 1] = misc.get_params_number(model)
+            else: objs[i, 1] = 999999
 
             if performance > best_perf:
                 best_perf = performance
