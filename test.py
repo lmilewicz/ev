@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 from statistics import mean
 import codecs, json, os, time
@@ -25,6 +26,18 @@ def log_stats(algorithm):
             np.mean(pop_obj[:, 0]),
             np.median(pop_obj[:, 0]), 
             np.max(pop_obj[:, 0])))
+        
+        if not os.path.exists(config.path_dir): os.mkdir(config.path_dir)
+
+        if config.number_of_objectives > 1: 
+            data_to_save = np.asarray([gen, \
+            np.min(pop_obj[:, 0]), np.mean(pop_obj[:, 0]), np.median(pop_obj[:, 0]), np.max(pop_obj[:, 0]),\
+            np.min(pop_obj[:, 1]), np.mean(pop_obj[:, 1]), np.median(pop_obj[:, 1]), np.max(pop_obj[:, 1])])
+        else:
+            data_to_save = np.asarray([gen, \
+            np.min(pop_obj[:, 0]), np.mean(pop_obj[:, 0]), np.median(pop_obj[:, 0]), np.max(pop_obj[:, 0])])
+        with open(config.path_dir+'/final_data.csv', 'ab') as f:
+            np.savetxt(f, data_to_save.reshape(1, data_to_save.shape[0]), fmt='%.6f', delimiter=',')
 
         print('Best genome: {}'.format(best_genome))
         print('Error = {:.3f}, params number = {:.2e}'.format(pop_obj[best_index, 0], complexity))

@@ -32,7 +32,7 @@ def main():
 
     # algorithm = NSGA2(pop_size=config.pop_size,
     #             sampling=evolution_operations.SamplingAll(),
-    #             mutation=evolution_operations.MutationAll(),#
+    #             mutation=evolution_operations.MutationAll(),
     #             eliminate_duplicates=True)
     algorithm = NSGA2(pop_size=config.pop_size,
                 sampling=evolution_operations.SamplingFromSmall(),

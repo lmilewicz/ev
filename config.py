@@ -13,10 +13,10 @@ class Config():
     def __init__(self, argv=[]):
 
         ##### MAIN SETTINGS TO UPDATE       #####
-        self.dataset = 'cifar10' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
-        self.n_gen = 10
+        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+        self.n_gen = 15
         self.n_epochs = 5
-        self.pop_size = 5
+        self.pop_size = 20
 
         ##### SECONDARY SETTINGS TO UPDATE  #####
         self.batch_size = 32
@@ -25,7 +25,7 @@ class Config():
         self.max_n_ann_modules = 2
         self.max_n_conv_layers = 7
         self.max_n_ann_layers = 7
-        self.number_of_objectives = 2
+        self.number_of_objectives = 1
 
 
         ### Model settings      ###

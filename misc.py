@@ -122,7 +122,7 @@ def get_params_number(model):
     nonTrainableParams = np.sum([np.prod(v.get_shape()) for v in model.non_trainable_weights])
     totalParams = trainableParams + nonTrainableParams
 
-    return totalParams* 1e-9
+    return totalParams* 1e-3
 
 
 def get_graph(module):
