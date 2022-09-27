@@ -9,7 +9,7 @@ import misc
 
 
 def log_stats(algorithm):
-    gen = algorithm.n_gen
+    gen = algorithm.n_gen+config.load_gen
     config = algorithm.problem.config
 
     pop_obj = algorithm.pop.get('F')
@@ -50,7 +50,7 @@ def log_stats(algorithm):
     else:
         
         print('Gen {}, error {:.3f}, params {:.2e}, time {:.2f}, {:.2f}, {:.2f}, genome {}'.format(
-            config.load_gen+gen,
+            gen,
             pop_obj[best_index, 0],
             complexity,
             round(mean(config.fit_time),2),

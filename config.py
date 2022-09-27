@@ -44,7 +44,7 @@ class Config():
         self.best_model = None
 
         ### Saved files ###
-        self.global_dir = "model_json"+"/"+self.dataset
+        self.global_dir = "model_json/"+self.dataset
         self.genomes_path = "genomes_gen_"
         self.best_model_path = "bestmodel_gen_"
         self.algorithm_path = "algorithm_last_state"
@@ -53,7 +53,11 @@ class Config():
         [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = [0, None, None, ""]
         if len(argv)>1 and int(argv[1]) > 0:
             [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = test.load_saved_state(self)
+            self.n_gen = int(argv[1])
+        # else:
+        #     self.n_gen = 10
 
+      
         if self.load_time_str == "":
             now = datetime.now()
             self.time = now.strftime("%Y%m%d_%H%M%S")
@@ -73,10 +77,6 @@ class Config():
         # self.pop_size = 20
         self.n_constr = 0
         self.algorithm = 'NSGA2'
-        if len(argv)>1 and int(argv[1]) > 0:
-            self.n_gen = int(argv[1])
-        # else:
-        #     self.n_gen = 10
         self.termination = ('n_gen', self.n_gen)
 
 

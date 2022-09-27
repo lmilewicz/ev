@@ -8,7 +8,7 @@ from config import Config
 def visualize_genome(algorithm):
     config = algorithm.problem.config
     genome = get_best_genome(algorithm, config)
-    dot = visualize_genome_main(genome, config, gen = algorithm.n_gen)
+    dot = visualize_genome_main(genome, config, gen = algorithm.n_gen+config.load_gen)
     return dot
 
 
