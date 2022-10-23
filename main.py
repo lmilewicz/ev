@@ -9,7 +9,15 @@
 # 3 = INFO, WARNING, and ERROR messages are not printed
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1' 
+
+# # To solve 'ran out of gpu memory' in TensorFlow
+# import tensorflow as tf
+# tf_config = tf.compat.v1.ConfigProto()
+# tf_config.gpu_options.allow_growth = True
+# sess = tf.compat.v1.Session(config=tf_config)
+
 import sys
+import math
 
 from pymoo.algorithms.moo.nsga2 import NSGA2
 
@@ -45,9 +53,49 @@ def main():
                     termination=config.termination)
 
 
+def test_env(argv=[], dataset = 'mnist'):
+
+    config_settings = {
+        'n_gen': 1,
+        'load_gen': 0,
+        'dataset': dataset,
+        'pop_size': 5,
+        'n_epochs': 1,
+        'number_of_objectives': 1}
+    if len(argv)>1 and int(argv[1]) > 0: config_settings['argv'] = int(argv[1])
+
+
+    iterations = 4
+    iteration_for_second_objective = 2
+
+    for i in range(iterations):
+        config = Config(config_settings)      
+
+        print(config.pop_size, config.n_epochs)
+
+        problem = evolution.EVProblem(config)
+        algorithm = NSGA2(pop_size=config.pop_size,
+                    sampling=evolution_operations.SamplingFromSmall(),
+                    mutation=evolution_operations.MutationFromSmall(),
+                    eliminate_duplicates=True)
+        res = minimize(problem,
+                        algorithm, 
+                        callback=evolution.do_every_generations,
+                        termination=config.termination)
+
+        config_settings['load_gen'] = config_settings['n_gen'] + config_settings['load_gen']
+        config_settings['load_genomes'] = res.pop.get("X").tolist()
+        config_settings['load_best_model'] = res.pop.get("X")[0].tolist()
+        config_settings['load_time_str'] = config.time
+
+        if i == iteration_for_second_objective-1: config_settings['number_of_objectives'] = 2
+
+        config_settings['pop_size'] = math.ceil(config_settings['pop_size']*0.66)
+        config_settings['n_epochs'] = math.ceil(config_settings['n_epochs']*1.33)
+        config_settings['load_genomes'] = config_settings['load_genomes'][0:config_settings['pop_size']]
 
 if __name__ == '__main__':
-    main()
+    test_env(sys.argv)
 
 
 

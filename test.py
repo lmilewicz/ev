@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from statistics import mean
 import codecs, json, os, time
@@ -9,11 +8,11 @@ import misc
 
 
 def log_stats(algorithm):
-    gen = algorithm.n_gen+config.load_gen
     config = algorithm.problem.config
+    gen = algorithm.n_gen+config.load_gen
 
     pop_obj = algorithm.pop.get('F')
-    X = algorithm.pop.get('X')
+    # X = algorithm.pop.get('X')
     best_index = np.argmin(pop_obj[:, 0])
     best_genome = misc.get_best_genome(algorithm, config)
     complexity = 999999
@@ -57,9 +56,6 @@ def log_stats(algorithm):
             round(mean(config.performance_time),2),
             round((time.time()-config.start_time), 2),
             best_genome))
-
-    # for i, genome in enumerate(X):
-    #     print(i, genome)
 
 
 def save_model(algorithm):

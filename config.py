@@ -10,22 +10,29 @@ import test
 
 
 class Config():
-    def __init__(self, argv=[]):
+    def __init__(self, config_settings={}):
 
         ##### MAIN SETTINGS TO UPDATE       #####
-        self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
-        self.n_gen = 15
-        self.n_epochs = 5
-        self.pop_size = 20
+        if config_settings:
+            self.dataset = config_settings['dataset']
+            self.n_gen = config_settings['n_gen']
+            self.n_epochs = config_settings['n_epochs']
+            self.pop_size = config_settings['pop_size']
+            self.number_of_objectives = config_settings['number_of_objectives']
+        else:
+            self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
+            self.n_gen = 15
+            self.n_epochs = 5
+            self.pop_size = 20
+            self.number_of_objectives = 1
 
         ##### SECONDARY SETTINGS TO UPDATE  #####
         self.batch_size = 32
         self.verbose = True
         self.max_n_conv_modules = 3
         self.max_n_ann_modules = 2
-        self.max_n_conv_layers = 7
-        self.max_n_ann_layers = 7
-        self.number_of_objectives = 1
+        self.max_n_conv_layers = 6
+        self.max_n_ann_layers = 6
 
 
         ### Model settings      ###
@@ -51,13 +58,18 @@ class Config():
 
         ### Load files ###
         [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = [0, None, None, ""]
-        if len(argv)>1 and int(argv[1]) > 0:
+        if 'argv' in config_settings:
             [self.load_gen, self.load_genomes, self.load_best_model, self.load_time_str] = test.load_saved_state(self)
-            self.n_gen = int(argv[1])
+            self.n_gen = config_settings['argv']
         # else:
         #     self.n_gen = 10
 
-      
+        if 'load_gen' in config_settings: self.load_gen = config_settings['load_gen']
+        if 'load_genomes' in config_settings: self.load_genomes = config_settings['load_genomes']
+        if 'load_best_model' in config_settings: self.load_best_model = config_settings['load_best_model']
+        if 'load_time_str' in config_settings: self.load_time_str = config_settings['load_time_str']
+
+
         if self.load_time_str == "":
             now = datetime.now()
             self.time = now.strftime("%Y%m%d_%H%M%S")
