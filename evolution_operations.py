@@ -76,13 +76,21 @@ def perform_mutations(X, config, fromSmall=False):
     neurons_mask = np.full(X.shape, False)
     activation_mask = np.full(X.shape, False)
 
-    search = np.where(np.logical_and(dice_array>=0.3, dice_array<0.6))[0]
+    search = np.where(np.logical_and(dice_array>=0.3, dice_array<0.5))[0]
     if search.size: neurons_mask[search, module_index[search]] = True
-    search = np.where(np.logical_and(dice_array>=0.6, dice_array<0.9))[0]
+    search = np.where(np.logical_and(dice_array>=0.5, dice_array<0.7))[0]
     if search.size: activation_mask[search, module_index[search]+1] = True
 
     _X[neurons_mask] = np.random.randint(6)
     _X[activation_mask] = np.random.randint(3)
+
+    # Dropout mutation
+    drouput_mask = np.full(X.shape, False)
+    search = np.where(np.logical_and(dice_array>=0.7, dice_array<0.9))[0]
+    if search.size: drouput_mask[search, -2] = True
+
+    _X[drouput_mask] = np.random.randint(9)
+
 
     # Output module
     output_mask = np.full(X.shape, False)

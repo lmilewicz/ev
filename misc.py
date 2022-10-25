@@ -24,6 +24,7 @@ def genome_convert(genome, config):
         genome_converted.append([genome[index], genome[index+1]])
         index = index +2
     genome_converted.append([genome[index]])
+    genome_converted.append([genome[index+1]])
 
     return genome_converted
 

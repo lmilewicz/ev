@@ -56,27 +56,27 @@ def main():
 def test_env(argv=[], dataset = 'mnist'):
 
     config_settings = {
-        'n_gen': 1,
+        'n_gen': 2,
         'load_gen': 0,
         'dataset': dataset,
-        'pop_size': 5,
+        'pop_size': 2,
         'n_epochs': 1,
-        'number_of_objectives': 1}
+        'number_of_objectives': 2,
+        # 'dropout': 0.4
+        }
     if len(argv)>1 and int(argv[1]) > 0: config_settings['argv'] = int(argv[1])
 
 
-    iterations = 4
+    iterations = 1
     iteration_for_second_objective = 2
 
     for i in range(iterations):
         config = Config(config_settings)      
 
-        print(config.pop_size, config.n_epochs)
-
         problem = evolution.EVProblem(config)
         algorithm = NSGA2(pop_size=config.pop_size,
-                    sampling=evolution_operations.SamplingFromSmall(),
-                    mutation=evolution_operations.MutationFromSmall(),
+                    sampling=evolution_operations.SamplingAll(),
+                    mutation=evolution_operations.MutationAll(),
                     eliminate_duplicates=True)
         res = minimize(problem,
                         algorithm, 

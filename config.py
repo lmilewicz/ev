@@ -19,15 +19,19 @@ class Config():
             self.n_epochs = config_settings['n_epochs']
             self.pop_size = config_settings['pop_size']
             self.number_of_objectives = config_settings['number_of_objectives']
+            # self.dropout = config_settings['dropout']
+
         else:
             self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
             self.n_gen = 15
-            self.n_epochs = 5
+            self.n_epochs = 10
             self.pop_size = 20
             self.number_of_objectives = 1
+            # self.dropout = 0.4
+
 
         ##### SECONDARY SETTINGS TO UPDATE  #####
-        self.batch_size = 32
+        self.batch_size = 128
         self.verbose = True
         self.max_n_conv_modules = 3
         self.max_n_ann_modules = 2
@@ -108,7 +112,7 @@ class Config():
         self.conv_genome_len = self.conv_module_genome_len*self.max_n_conv_modules
         self.ann_genome_len = self.ann_module_genome_len*self.max_n_ann_modules
         self.topology_len = self.conv_genome_len + self.ann_genome_len
-        self.genome_len = self.topology_len + self.max_n_modules*2 + 1
+        self.genome_len = self.topology_len + self.max_n_modules*2 + 1 + 1 # dropout and output layer
 
         ### ANN settings        ###
         # self.n_epochs = 10

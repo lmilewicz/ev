@@ -17,7 +17,7 @@ import node
 
 class Blueprint():
     def __init__(self, genome, config) -> tf.keras.Model:
-        self.model = None
+        self.model_array = [None, None]
         self.modules_list = []
         self.config = config
         self.genome = genome
@@ -41,6 +41,8 @@ class Blueprint():
             if i == config.max_n_conv_modules:
                 last_layer = node.MaxPool2D()(last_layer)
                 last_layer = tf.keras.layers.Flatten()(last_layer)
+                last_layer = tf.keras.layers.Dropout(rate=genome[-2]/10)(last_layer)
+
                 layer_type = node.DenseLayer
                 module_genome_len = config.ann_module_genome_len
                 layers_indexes=config.ann_layers_indexes
@@ -79,9 +81,10 @@ class Blueprint():
         else:
             raise ValueError('In Blueprint: undefined output: '+str(genome[-1]))
 
-        self.model = tf.keras.Model(input, output)
+        self.model_array[0] = tf.keras.Model(input, output)
+        self.model_array[1] = tf.keras.Model(input, output)
 
-        if config.debug: print(self.model.summary())
+        if config.debug: print(self.model_array[0].summary())
 
         # self.model.compile(
         #     optimizer=tf.keras.optimizers.Adam(config.learning_rate),
@@ -91,23 +94,24 @@ class Blueprint():
         # self.model.compile(
         #     optimizer=config.optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"]
         # )
-        self.model.compile(
+        for model in self.model_array:
+            model.compile(
             optimizer=tf.keras.optimizers.Adam(config.learning_rate),
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
         )
-
         config.blueprint_time.append(time.time()-time1)
 
 
-    def get_model(self) -> tf.keras.Model:
-        return self.model
+    def get_model_array(self) -> tf.keras.Model:
+        return self.model_array
 
 
     def evaluate_model(self):
         time1 = time.time()
 
-        self.model.fit(self.config.ds_train,
+        for model in self.model_array:
+            model.fit(self.config.ds_train,
                     epochs=self.config.n_epochs,
                     use_multiprocessing=True,
                     batch_size=self.config.batch_size,
@@ -117,20 +121,22 @@ class Blueprint():
         time2 = time.time()
         self.config.fit_time.append(time2-time1)
 
-        if self.genome[-1] == 0:
-            performance = dense_performance(model=self.model, validation_data=self.config.ds_test)
+        performance_array = [0, 0]
+        for i, model in enumerate(self.model_array):
+            if self.genome[-1] == 0:
+                performance_array[i] = dense_performance(model=model, validation_data=self.config.ds_test)
 
-        elif self.genome[-1] == 1:
-            performance = prob_performance(model=self.model, validation_data=self.config.ds_test)
+            elif self.genome[-1] == 1:
+                performance_array[i] = prob_performance(model=model, validation_data=self.config.ds_test)
 
-        elif self.genome[-1] == 2:
-            performance = xgb_performance(
-                            config=self.config, 
-                            xgboost_input_layer=self.xgboost_input_layer)
+            elif self.genome[-1] == 2:
+                performance_array[i] = xgb_performance(
+                                config=self.config, 
+                                xgboost_input_layer=self.xgboost_input_layer)
 
         self.config.performance_time.append(time.time()-time2)
 
-        return performance
+        return max(performance_array)
 
 
 def dense_performance(model, validation_data):

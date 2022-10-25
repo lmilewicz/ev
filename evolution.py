@@ -34,7 +34,7 @@ class EVProblem(Problem):
         for i in range(x.shape[0]):
             
             blueprint_object = Blueprint(genome=x[i, :], config=self.config)
-            model = blueprint_object.get_model()
+            model = blueprint_object.get_model_array()[0]
             performance = blueprint_object.evaluate_model()
 
             objs[i, 0] = 1 - performance
