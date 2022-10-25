@@ -56,11 +56,11 @@ def main():
 def test_env(argv=[], dataset = 'mnist'):
 
     config_settings = {
-        'n_gen': 2,
+        'n_gen': 30,
         'load_gen': 0,
         'dataset': dataset,
-        'pop_size': 2,
-        'n_epochs': 1,
+        'pop_size': 20,
+        'n_epochs': 10,
         'number_of_objectives': 2,
         # 'dropout': 0.4
         }

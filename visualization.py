@@ -13,11 +13,22 @@ def visualize_genome(algorithm):
 
 
 def visualize_genome_main(genome, config, gen=0):
+    
+    if genome[-1][0] == 0:
+        output_type = 'dense'
+    elif genome[-1][0] == 1:
+        output_type = 'bayes'
+    else:
+        output_type = 'xgboost'
+    
+    graph_label = 'Best Genome. Output: '+output_type+'. Dropout: '+str(genome[-2][0]/10)
+    print(graph_label)
     dot = Digraph(
         format='pdf', 
         filename=config.path_dir+'/'+'genome_gen_'+str(gen), 
         node_attr={'style':'filled'}, 
-        graph_attr={'rankdir':'LR', 'label':'Best Genome'})
+        graph_attr={'rankdir':'LR', 
+                    'label':graph_label})
 
     input_str = 'input'
     output_str = 'input'
