@@ -1,7 +1,9 @@
 model_json/
 __pycache__/
 logs/
+bin/
 .ipynb_checkpoints/
+bin.py
 all_final_data.csv
 new_notebook.ipynb
 notebook1.ipynb
