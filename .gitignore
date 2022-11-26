@@ -4,7 +4,7 @@ logs/
 .ipynb_checkpoints/
 all_final_data.csv
 new_notebook.ipynb
-notebook.ipynb
-notebook_profiler.ipynb
-test_notebook.ipynb
-test_notebook2.ipynb
+notebook1.ipynb
+notebook_profiler1.ipynb
+test_notebook_1.ipynb
+test_notebook_2.ipynb
