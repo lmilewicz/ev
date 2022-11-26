@@ -33,36 +33,18 @@ from config import Config
 # or @nb.jit e.g.--> @nb.jit(nb.f8[:,:](nb.f8[:,:], nb.f8[:,:]), forceobj=True)
 
 
-def main():
-    config = Config(sys.argv)
-       
-    problem = evolution.EVProblem(config)
-
-    # algorithm = NSGA2(pop_size=config.pop_size,
-    #             sampling=evolution_operations.SamplingAll(),
-    #             mutation=evolution_operations.MutationAll(),
-    #             eliminate_duplicates=True)
-    algorithm = NSGA2(pop_size=config.pop_size,
-                sampling=evolution_operations.SamplingFromSmall(),
-                mutation=evolution_operations.MutationFromSmall(),
-                eliminate_duplicates=True)
-
-    res = minimize(problem,
-                    algorithm, 
-                    callback=evolution.do_every_generations,
-                    termination=config.termination)
-
-
-def test_env(argv=[], dataset = 'mnist'):
+def main(argv=[], dataset = 'mnist', output='any'):
 
     config_settings = {
         'n_gen': 30,
         'load_gen': 0,
         'dataset': dataset,
         'pop_size': 20,
-        'n_epochs': 10,
+        'n_epochs': 15,
         'number_of_objectives': 2,
         # 'dropout': 0.4
+        'batch_size': 64,
+        'output': output
         }
     if len(argv)>1 and int(argv[1]) > 0: config_settings['argv'] = int(argv[1])
 
@@ -75,8 +57,8 @@ def test_env(argv=[], dataset = 'mnist'):
 
         problem = evolution.EVProblem(config)
         algorithm = NSGA2(pop_size=config.pop_size,
-                    sampling=evolution_operations.SamplingAll(),
-                    mutation=evolution_operations.MutationAll(),
+                    sampling=evolution_operations.SamplingFromSmall(),
+                    mutation=evolution_operations.MutationFromSmall(),
                     eliminate_duplicates=True)
         res = minimize(problem,
                         algorithm, 
@@ -95,9 +77,31 @@ def test_env(argv=[], dataset = 'mnist'):
         config_settings['load_genomes'] = config_settings['load_genomes'][0:config_settings['pop_size']]
 
 if __name__ == '__main__':
-    test_env(sys.argv)
+    dataset='cifar100'
+    output='any'
+    main(sys.argv, dataset=dataset, output=output)
 
 
 
+
+
+# def main():
+#     config = Config(sys.argv)
+       
+#     problem = evolution.EVProblem(config)
+
+#     # algorithm = NSGA2(pop_size=config.pop_size,
+#     #             sampling=evolution_operations.SamplingAll(),
+#     #             mutation=evolution_operations.MutationAll(),
+#     #             eliminate_duplicates=True)
+#     algorithm = NSGA2(pop_size=config.pop_size,
+#                 sampling=evolution_operations.SamplingFromSmall(),
+#                 mutation=evolution_operations.MutationFromSmall(),
+#                 eliminate_duplicates=True)
+
+#     res = minimize(problem,
+#                     algorithm, 
+#                     callback=evolution.do_every_generations,
+#                     termination=config.termination)
 
 

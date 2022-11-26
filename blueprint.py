@@ -115,8 +115,8 @@ class Blueprint():
                     epochs=self.config.n_epochs,
                     use_multiprocessing=True,
                     batch_size=self.config.batch_size,
-                    verbose=0,)
-                    #callbacks=[self.config.tensorboard_callback])
+                    verbose=0,
+                    callbacks=[self.config.early_stopping_callback])#tfa.callbacks.TimeStopping(seconds=5*60, verbose=1)
 
         time2 = time.time()
         self.config.fit_time.append(time2-time1)

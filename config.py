@@ -2,6 +2,8 @@
 import numpy as np
 import tensorflow_probability as tfp
 import tensorflow as tf
+import tensorflow_addons as tfa
+
 from datetime import datetime
 import time
 
@@ -20,23 +22,27 @@ class Config():
             self.pop_size = config_settings['pop_size']
             self.number_of_objectives = config_settings['number_of_objectives']
             # self.dropout = config_settings['dropout']
+            self.batch_size = config_settings['batch_size']
+            self.output = config_settings['output']
 
         else:
             self.dataset = 'mnist' # 'cifar10'  'mnist' 'cifar10_corrupted' 'cifar100'
             self.n_gen = 15
-            self.n_epochs = 10
+            self.n_epochs = 15
             self.pop_size = 20
             self.number_of_objectives = 1
             # self.dropout = 0.4
+            self.batch_size = 64
+            self.output = 'any'
 
 
         ##### SECONDARY SETTINGS TO UPDATE  #####
-        self.batch_size = 128
+        # self.batch_size = 64
         self.verbose = True
         self.max_n_conv_modules = 3
         self.max_n_ann_modules = 2
-        self.max_n_conv_layers = 6
-        self.max_n_ann_layers = 6
+        self.max_n_conv_layers = 5
+        self.max_n_ann_layers = 5
 
 
         ### Model settings      ###
@@ -86,8 +92,11 @@ class Config():
         # self.max_n_conv_layers = 5
         # self.max_n_ann_layers = 5
 
-        self.n_conv_layers = 7
-        self.n_ann_layers = 7
+        self.n_conv_layers = 5
+        self.n_ann_layers = 5
+
+        if self.max_n_conv_layers < self.n_conv_layers: self.n_conv_layers = self.max_n_conv_layers
+        if self.max_n_ann_layers < self.n_ann_layers: self.n_ann_layers = self.max_n_ann_layers
 
         # self.number_of_objectives = 2
         # self.pop_size = 20
@@ -156,9 +165,14 @@ class Config():
         self.performance_time = []
         self.start_time = time.time()
 
-
+        # callbacks
         log_dir = 'logs'
         self.tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+        # self.time_stopping_callback = tfa.callbacks.TimeStopping(seconds=5*60, verbose=1)
+        self.early_stopping_callback = tf.keras.callbacks.EarlyStopping(monitor='sparse_categorical_accuracy', mode='max', patience=5, verbose=1)
+
+
 
 
 def get_layers_indexes(n_layers):

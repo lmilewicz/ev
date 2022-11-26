@@ -45,8 +45,9 @@ class EVProblem(Problem):
                 best_perf = performance
                 best_model = model
 
-            print(str(datetime.now().time().strftime("%H:%M:%S"))+": Error: {:.4f}, genome {}".format(1-performance, x[i, :]))
-
+            print(str(datetime.now().time().strftime("%H:%M:%S"))+": Error: {:.4f}, Complex: {:.2f}, genome {}"
+                .format(objs[i, 0], objs[i, 1], x[i, :]))
+            
         if self.config.debug:
             print('Best perf: '+str(round(best_perf, 4)))
             best_model.summary()

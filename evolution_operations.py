@@ -1,11 +1,16 @@
 import numpy as np
-
-from pymoo.core.sampling import Sampling
 from pymoo.core.mutation import Mutation
+from pymoo.core.sampling import Sampling
 
 from misc import RemoveDisconnectedLayers
 
 
+def set_output(_X, output):
+    if output == 'any': pass
+    elif output == 'bayes': _X[:,-1] = 1
+    elif output == 'xgboost': _X[:,-1] = 2
+    return _X
+    
 class SamplingFromSmall(Sampling):
     def __init__(self) -> None:
         super().__init__()
@@ -20,6 +25,7 @@ class SamplingFromSmall(Sampling):
             _X[~R] = 0
             _X = (_X > 0.5).astype(np.int)
 
+        _X = set_output(_X, output = problem.config.output)
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 
@@ -34,6 +40,7 @@ class SamplingAll (Sampling):
             _X = np.random.random((n_samples, problem.n_var))
             _X = (_X > 0.5).astype(np.int)
 
+        _X = set_output(_X, output = problem.config.output)
         return RemoveDisconnectedLayers(_X, problem.config).return_new_X()
 
 class MutationFromSmall(Mutation):
@@ -93,10 +100,11 @@ def perform_mutations(X, config, fromSmall=False):
 
 
     # Output module
-    output_mask = np.full(X.shape, False)
-    output_mask[dice_array >= 0.9, -1] = True
+    if config.output == 'any':
+        output_mask = np.full(X.shape, False)
+        output_mask[dice_array >= 0.9, -1] = True
 
-    _X[output_mask] = np.random.randint(3)
+        _X[output_mask] = np.random.randint(3)
 
     return _X
 
@@ -165,10 +173,11 @@ def calculate_range(shape, config):
 
 
 
+import sys
+
 import evolution
 from config import Config
 
-import sys
 np.set_printoptions(threshold=sys.maxsize)
 
 

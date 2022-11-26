@@ -19,10 +19,9 @@ def visualize_genome_main(genome, config, gen=0):
     elif genome[-1][0] == 1:
         output_type = 'bayes'
     else:
-        output_type = 'xgboost'
-    
+        output_type = 'xgboost'  
     graph_label = 'Best Genome. Output: '+output_type+'. Dropout: '+str(genome[-2][0]/10)
-    print(graph_label)
+    
     dot = Digraph(
         format='pdf', 
         filename=config.path_dir+'/'+'genome_gen_'+str(gen), 
